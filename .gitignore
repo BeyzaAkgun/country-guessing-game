@@ -1,0 +1,32 @@
+# Node / Frontend
+node_modules/
+dist/
+.build/
+.expo/
+.expo-shared/
+
+# Logs
+*.log
+
+# Env files
+.env
+.env.local
+.env.*
+
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Testing / coverage
+coverage/
