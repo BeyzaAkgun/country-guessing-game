@@ -1,3 +1,4 @@
+
 // // client.ts - Central API client for geo-backend
 // const BASE_URL = "http://localhost:8000/api/v1";
 // const WS_BASE  = "ws://localhost:8000/ws";
@@ -98,6 +99,41 @@
 //   players: MatchEndPlayer[];
 // }
 
+// // ── Party types ───────────────────────────────────────────────────────────────
+// export interface PartyRoomResponse {
+//   room_code: string;
+//   host_token: string;
+//   total_rounds: number;
+//   question_mode: string;
+// }
+
+// export interface PartyJoinResponse {
+//   player_id: string;
+//   player_token: string;
+//   display_name: string;
+//   color: string;
+//   room_code: string;
+//   error?: string;
+// }
+
+// export interface PartyRoomStatus {
+//   room_code: string;
+//   status: "waiting" | "in_progress" | "finished";
+//   question_mode: string;
+//   total_rounds: number;
+//   current_round: number;
+//   players: PartyPlayer[];
+//   error?: string;
+// }
+
+// export interface PartyPlayer {
+//   player_id: string;
+//   display_name: string;
+//   color: string;
+//   score: number;
+//   correct: number;
+// }
+
 // // ── Core fetch wrapper ────────────────────────────────────────────────────────
 // async function request<T>(
 //   path: string,
@@ -178,9 +214,10 @@
 //     request<MatchFoundResponse>("/matchmaking/queue/status"),
 
 //   forfeitMatch: (matchId: string) =>
-//     request<{ status: string; xp_earned: number; rank_points_delta: number }>(`/matchmaking/match/${matchId}/forfeit`, {
-//       method: "POST",
-//     }),
+//     request<{ status: string; xp_earned: number; rank_points_delta: number }>(
+//       `/matchmaking/match/${matchId}/forfeit`,
+//       { method: "POST" }
+//     ),
 // };
 
 // // ── Leaderboard endpoints ─────────────────────────────────────────────────────
@@ -193,18 +230,46 @@
 //   aroundMe: () => request<LeaderboardEntry[]>("/leaderboard/around-me"),
 // };
 
-// // ── WebSocket factory ─────────────────────────────────────────────────────────
+// // ── Party endpoints ───────────────────────────────────────────────────────────
+// export const party = {
+//   /** Host creates a new room. No auth required. */
+//   createRoom: (totalRounds = 10, questionMode = "classic") =>
+//     request<PartyRoomResponse>(
+//       `/party/rooms?total_rounds=${totalRounds}&question_mode=${questionMode}`,
+//       { method: "POST" }
+//     ),
+
+//   /** Player joins a room by code. No auth required. */
+//   joinRoom: (roomCode: string, displayName: string) =>
+//     request<PartyJoinResponse>(
+//       `/party/rooms/${roomCode}/join?display_name=${encodeURIComponent(displayName)}`,
+//       { method: "POST" }
+//     ),
+
+//   /** Poll room status and player list. */
+//   getRoom: (roomCode: string) =>
+//     request<PartyRoomStatus>(`/party/rooms/${roomCode}`),
+// };
+
+// // ── WebSocket factories ───────────────────────────────────────────────────────
 // export function createMatchSocket(matchId: string): WebSocket {
 //   const token = getToken();
 //   return new WebSocket(`${WS_BASE}/match/${matchId}?token=${token}`);
 // }
 
+// export function createPartyHostSocket(roomCode: string, hostToken: string): WebSocket {
+//   return new WebSocket(`${WS_BASE}/party/${roomCode}?role=host&token=${hostToken}`);
+// }
 
-//Party Mode.If there is error go back here
+// export function createPartyPlayerSocket(roomCode: string, playerToken: string): WebSocket {
+//   return new WebSocket(`${WS_BASE}/party/${roomCode}?role=player&token=${playerToken}`);
+// }
+
+
 
 // client.ts - Central API client for geo-backend
-const BASE_URL = "http://localhost:8000/api/v1";
-const WS_BASE  = "ws://localhost:8000/ws";
+const BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000/api/v1";
+const WS_BASE  = import.meta.env.VITE_WS_URL ?? "ws://localhost:8000/ws";
 
 // ── Token helpers ─────────────────────────────────────────────────────────────
 export function getToken(): string | null {
