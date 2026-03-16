@@ -13,6 +13,28 @@ export interface Country {
   geometry: any;
 }
 
+// Maps world-atlas abbreviated names → full standardized names
+const NAME_NORMALIZATION: { [key: string]: string } = {
+  "Dem. Rep. Congo": "Democratic Republic of the Congo",
+  "Dominican Rep.": "Dominican Republic",
+  "Côte d'Ivoire": "Ivory Coast",
+  "S. Sudan": "South Sudan",
+  "Central African Rep.": "Central African Republic",
+  "Bosnia and Herz.": "Bosnia and Herzegovina",
+  "W. Sahara": "Western Sahara",
+  "Eq. Guinea": "Equatorial Guinea",
+  "Solomon Is.": "Solomon Islands",
+  "N. Cyprus": "Northern Cyprus",
+  "Macedonia": "North Macedonia",
+  "Falkland Is.": "Falkland Islands",
+  "Fr. S. Antarctic Lands": "French Southern Territories",
+  "eSwatini": "Eswatini",
+  "Congo": "Republic of the Congo",
+  "Trinidad and Tobago": "Trinidad and Tobago",
+  "Somaliland": "Somaliland",
+  "Kosovo": "Kosovo",
+};
+
 export function useCountryData() {
   const [countries, setCountries] = useState<Country[]>([]);
   const [loading, setLoading] = useState(true);
@@ -21,16 +43,22 @@ export function useCountryData() {
     fetch(GEO_URL)
       .then((response) => response.json())
       .then((data) => {
-        // world-atlas topojson usually has objects.countries
-        // We use 'feature' to convert to GeoJSON features
         const countriesData = (feature(data, data.objects.countries) as any).features;
-        
-        // Filter out Antarctica and ensure properties exist
-        const filtered = countriesData.filter((c: any) => 
-          c.properties && 
-          c.properties.name !== "Antarctica"
-        );
-        
+
+        const filtered = countriesData
+          .filter((c: any) =>
+            c.properties &&
+            c.properties.name !== "Antarctica"
+          )
+          .map((c: any) => ({
+            ...c,
+            properties: {
+              ...c.properties,
+              // Normalize abbreviated names to full names
+              name: NAME_NORMALIZATION[c.properties.name] ?? c.properties.name,
+            },
+          }));
+
         setCountries(filtered);
         setLoading(false);
       })
