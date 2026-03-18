@@ -110,7 +110,8 @@ export function MultiplayerGame({ onBackToMenu, user, initialMatchId }: Multipla
 
   // Auto-submit empty when timer hits 0
   useEffect(() => {
-    if (timeLeft === 0 && phase === "playing" && !lastResult && socketRef.current) {
+    // Auto-submit empty only if player hasn't answered correctly yet
+    if (timeLeft === 0 && phase === "playing" && !(lastResult && lastResult.correct) && socketRef.current) {
       socketRef.current.send(JSON.stringify({ event: "answer", data: { answer: "" } }));
     }
   }, [timeLeft, phase, lastResult]);
@@ -180,7 +181,8 @@ export function MultiplayerGame({ onBackToMenu, user, initialMatchId }: Multipla
 
   // ── Request next hint (ordered by index) ─────────────────────────────────
   const handleGetHint = useCallback(() => {
-    if (!question || lastResult || remainingHintCount === 0) return;
+    // Allow getting hints unless player already answered correctly
+    if (!question || (lastResult && lastResult.correct) || remainingHintCount === 0) return;
     const hint = getHintAtIndex(question.country_name, nextHintIndex);
     if (!hint) return;
     soundEffects.playHint();
@@ -192,7 +194,9 @@ export function MultiplayerGame({ onBackToMenu, user, initialMatchId }: Multipla
 
   // ── Map click ─────────────────────────────────────────────────────────────
   const handleCountryClick = useCallback((geo: any) => {
-    if (isMapLocked || lastResult) return;
+    // Only block clicks if map is locked (hint modal) or player already got it CORRECT
+    // Wrong answer: player can keep trying until round ends
+    if (isMapLocked || (lastResult && lastResult.correct)) return;
     const name = geo.properties?.name || geo.name;
     soundEffects.playClick();
     setSelectedCountryName(name);
@@ -200,7 +204,9 @@ export function MultiplayerGame({ onBackToMenu, user, initialMatchId }: Multipla
 
   // ── Submit answer ─────────────────────────────────────────────────────────
   const handleSubmit = useCallback(() => {
-    if (!selectedCountryName || !socketRef.current || lastResult) return;
+    // Allow submit if no result yet, OR if last result was wrong (can keep guessing)
+    if (!selectedCountryName || !socketRef.current) return;
+    if (lastResult && lastResult.correct) return; // already got it right, wait for next round
     socketRef.current.send(JSON.stringify({ event: "answer", data: { answer: selectedCountryName, hints_used: hintsUsed } }));
   }, [selectedCountryName, lastResult, hintsUsed]);
 
@@ -246,10 +252,13 @@ export function MultiplayerGame({ onBackToMenu, user, initialMatchId }: Multipla
           break;
         case "answer_result":
           setLastResult({ correct: data.correct, points: data.points_earned, correctAnswer: data.correct_answer });
-          if (timerRef.current) clearInterval(timerRef.current);
+          // Only stop timer if correct — wrong answer keeps timer running so player can keep guessing
+          if (data.correct && timerRef.current) clearInterval(timerRef.current);
           if (data.correct) {
             soundEffects.playCorrect();
           } else {
+            // Wrong answer: clear selection so player can pick a new country
+            setSelectedCountryName(null);
             soundEffects.playWrong();
           }
           setRoundResults(prev => [...prev, {
@@ -740,23 +749,13 @@ export function MultiplayerGame({ onBackToMenu, user, initialMatchId }: Multipla
       <div className="absolute bottom-24 left-3 z-20 w-56">
         <div className="bg-slate-900/92 backdrop-blur-md rounded-2xl border border-slate-700/50 shadow-xl p-3">
           <AnimatePresence mode="wait">
-            {lastResult ? (
-              <motion.div key="result" initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
-                className={`text-center py-1 ${lastResult.correct ? "text-emerald-400" : "text-red-400"}`}>
-                {lastResult.correct ? (
-                  <>
-                    <Zap className="w-5 h-5 mx-auto mb-1" />
-                    <p className="font-black text-sm">+{lastResult.points} pts!</p>
-                    <p className="text-[10px] opacity-70">Correct! Next round soon...</p>
-                  </>
-                ) : (
-                  <>
-                    <p className="font-black text-sm">
-                      {lastResult.correctAnswer ? `It was ${lastResult.correctAnswer}` : "Time's up!"}
-                    </p>
-                    <p className="text-[10px] opacity-70">Next round soon...</p>
-                  </>
-                )}
+            {lastResult && lastResult.correct ? (
+              // Correct answer — show result and wait for next round
+              <motion.div key="result-correct" initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+                className="text-center py-1 text-emerald-400">
+                <Zap className="w-5 h-5 mx-auto mb-1" />
+                <p className="font-black text-sm">+{lastResult.points} pts!</p>
+                <p className="text-[10px] opacity-70">Correct! Next round soon...</p>
               </motion.div>
             ) : (
               <motion.div key="submit" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
