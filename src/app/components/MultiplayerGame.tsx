@@ -730,7 +730,7 @@ export function MultiplayerGame({ onBackToMenu, user, initialMatchId }: Multipla
               ))}
             </AnimatePresence>
           </div>
-          {!lastResult && remainingHintCount > 0 && (
+          {!(lastResult && lastResult.correct) && remainingHintCount > 0 && (
             <div className="px-2 pb-2">
               <button onClick={handleGetHint}
                 className="w-full flex items-center justify-center gap-1.5 py-1.5 bg-yellow-500/10 hover:bg-yellow-500/20 border border-yellow-500/30 rounded-xl text-[11px] font-semibold text-yellow-400 transition-all active:scale-95">
@@ -739,7 +739,7 @@ export function MultiplayerGame({ onBackToMenu, user, initialMatchId }: Multipla
               </button>
             </div>
           )}
-          {!lastResult && remainingHintCount === 0 && shownHints.length > 0 && (
+          {!(lastResult && lastResult.correct) && remainingHintCount === 0 && shownHints.length > 0 && (
             <p className="text-[10px] text-slate-500 text-center pb-2">No more hints available</p>
           )}
         </div>
