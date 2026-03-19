@@ -166,9 +166,34 @@ export function calculatePoints(hintsUsed: number): number {
  * Skips flag/capital if the data doesn't exist for that country.
  * Always starts with the continent hint from countryHints.ts.
  */
+
+// ── Name aliases ──────────────────────────────────────────────────────────────
+// Maps backend country names to countryHints.ts keys where they differ
+const COUNTRY_NAME_ALIASES: Record<string, string> = {
+  "Bosnia and Herzegovina": "Bosnia and Herz.",
+  "Central African Republic": "Central African Rep.",
+  "Democratic Republic of the Congo": "Dem. Rep. Congo",
+  "Republic of the Congo": "Congo",
+  "Dominican Republic": "Dominican Rep.",
+  "Equatorial Guinea": "Eq. Guinea",
+  "Eswatini": "eSwatini",
+  "Ivory Coast": "Côte d'Ivoire",
+  "North Macedonia": "Macedonia",
+  "Solomon Islands": "Solomon Is.",
+  "South Sudan": "S. Sudan",
+  // These countries have no hints entry — will get flag+capital only
+  // "Bahrain", "Cabo Verde", "Comoros", "Maldives", "Malta", "Mauritius"
+};
+
+/** Resolve a country name to its hints key */
+function resolveHintName(countryName: string): string {
+  return COUNTRY_NAME_ALIASES[countryName] ?? countryName;
+}
+
 export function getOrderedHints(countryName: string): MPHint[] {
   const hints: MPHint[] = [];
-  const source = countryHints[countryName];
+  const resolvedName = resolveHintName(countryName);
+  const source = countryHints[resolvedName];
 
   // Hint 1 — Continent (type "continent" from countryHints.ts)
   const continentHint = source?.find((h) => h.type === "continent");
