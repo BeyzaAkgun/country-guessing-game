@@ -108,13 +108,8 @@ export function MultiplayerGame({ onBackToMenu, user, initialMatchId }: Multipla
     timerRef.current = setInterval(tick, 500);
   }, []);
 
-  // Auto-submit empty when timer hits 0
-  useEffect(() => {
-    // Auto-submit empty only if player hasn't answered correctly yet
-    if (timeLeft === 0 && phase === "playing" && !(lastResult && lastResult.correct) && socketRef.current) {
-      socketRef.current.send(JSON.stringify({ event: "answer", data: { answer: "" } }));
-    }
-  }, [timeLeft, phase, lastResult]);
+  // Timer hits 0 — backend auto-advances via _auto_advance task
+  // No frontend auto-submit needed
 
   const cleanup = useCallback(() => {
     if (timerRef.current)      clearInterval(timerRef.current);
