@@ -142,8 +142,11 @@ export function MultiplayerGame({ onBackToMenu, user, initialMatchId }: Multipla
     setQuestion(prev => {
       if (prev && prev.round !== q.round) {
         setLastResult(lr => {
-          if (!lr) {
-            // No result received — opponent advanced the round before us
+          // Reveal target country as red if player didn't answer correctly:
+          // - lr is null (never submitted) → reveal
+          // - lr.correct is false (submitted wrong) → reveal
+          // - lr.correct is true → already colored green, don't add to wrong
+          if (!lr || !lr.correct) {
             setWrongCountries(wc => [...wc, prev.country_name]);
           }
           return lr;
@@ -263,9 +266,9 @@ export function MultiplayerGame({ onBackToMenu, user, initialMatchId }: Multipla
           }]);
           if (data.correct && questionRef.current?.country_name) {
             setCorrectCountries(prev => [...prev, questionRef.current!.country_name]);
-          } else if (!data.correct && data.correct_answer) {
-            setWrongCountries(prev => [...prev, data.correct_answer]);
           }
+          // Note: do NOT color target country red on wrong answer —
+          // that would reveal the answer. It only gets revealed at round_end.
           break;
         case "player_answered":
           setScores(prev => ({
