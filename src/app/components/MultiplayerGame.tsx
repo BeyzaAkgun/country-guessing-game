@@ -43,10 +43,8 @@ const ROUND_SECONDS = 30;
 
 const SESSION_MATCH_KEY = "mp_active_match_id";
 const saveActiveMatch  = (id: string) => sessionStorage.setItem(SESSION_MATCH_KEY, id);
-const clearActiveMatch = () => {
-  sessionStorage.removeItem(SESSION_MATCH_KEY);
-};
-const getActiveMatch   = () => sessionStorage.getItem(SESSION_MATCH_KEY);
+const clearActiveMatch = ()           => sessionStorage.removeItem(SESSION_MATCH_KEY);
+const getActiveMatch   = ()           => sessionStorage.getItem(SESSION_MATCH_KEY);
 
 // ── Component ─────────────────────────────────────────────────────────────────
 export function MultiplayerGame({ onBackToMenu, user, initialMatchId }: MultiplayerGameProps) {
@@ -79,6 +77,7 @@ export function MultiplayerGame({ onBackToMenu, user, initialMatchId }: Multipla
   const [newHintModal, setNewHintModal]   = useState<{ text: string; type: any; countryName: string; flagUrl?: string } | null>(null);
 
   const socketRef      = useRef<WebSocket | null>(null);
+  const xpAwardedRef   = useRef<string | null>(null); // tracks match_id for which XP was awarded
   const timerRef       = useRef<ReturnType<typeof setInterval> | null>(null);
   const pollRef        = useRef<ReturnType<typeof setInterval> | null>(null);
   const phaseRef       = useRef<Phase>("lobby");
@@ -114,48 +113,27 @@ export function MultiplayerGame({ onBackToMenu, user, initialMatchId }: Multipla
   // No frontend auto-submit needed
 
   const cleanup = useCallback(() => {
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-      timerRef.current = null;
-    }
-    if (pollRef.current) {
-      clearInterval(pollRef.current);
-      pollRef.current = null;
-    }
-    if (graceTimerRef.current) {
-      clearInterval(graceTimerRef.current);
-      graceTimerRef.current = null;
-    }
-    if (socketRef.current) {
-      socketRef.current.onclose = null;
-      socketRef.current.close(1000, "Cleanup");
-      socketRef.current = null;
-    }
+    if (timerRef.current)      clearInterval(timerRef.current);
+    if (pollRef.current)       clearInterval(pollRef.current);
+    if (graceTimerRef.current) clearInterval(graceTimerRef.current);
+    if (socketRef.current) { socketRef.current.onclose = null; socketRef.current.close(); }
+    socketRef.current = null; timerRef.current = null; pollRef.current = null; graceTimerRef.current = null;
   }, []);
 
   useEffect(() => () => cleanup(), [cleanup]);
 
   const resetState = useCallback(() => {
     cleanup();
-    setMatchEnd(null);
-    setQuestion(null);
-    setScores({});
-    setOpponentId(null);
-    setRoundResults([]);
-    setLastResult(null);
-    setConnected(0);
-    setTimeLeft(ROUND_SECONDS);
-    setError(null);
-    setSelectedCountryName(null);
-    setCorrectCountries([]);
-    setWrongCountries([]);
-    setNextHintIndex(0);
-    setShownHints([]);
-    setOpponentAnswered(false);
-    setOpponentCorrect(null);
-    setIsMapLocked(false);
+    setMatchEnd(null); setQuestion(null); setScores({});
+    setOpponentId(null); setRoundResults([]);
+    setLastResult(null); setConnected(0);
+    setTimeLeft(ROUND_SECONDS); setError(null);
+    setSelectedCountryName(null); setCorrectCountries([]); setWrongCountries([]);
+    setNextHintIndex(0); setShownHints([]);
+    setOpponentAnswered(false); setOpponentCorrect(null); setIsMapLocked(false);
     setGraceCountdown(null);
     clearActiveMatch();
+    xpAwardedRef.current = null;
   }, [cleanup]);
 
   // ── Init a new round question ─────────────────────────────────────────────
@@ -240,37 +218,14 @@ export function MultiplayerGame({ onBackToMenu, user, initialMatchId }: Multipla
 
   // ── WebSocket connection ──────────────────────────────────────────────────
   const connectToMatch = useCallback((mid: string) => {
-    // Clean up existing connection first
-    if (socketRef.current) {
-      socketRef.current.onclose = null;
-      socketRef.current.close(1000, "Reconnecting to new match");
-      socketRef.current = null;
-    }
-
-    if (pollRef.current) {
-      clearInterval(pollRef.current);
-      pollRef.current = null;
-    }
-
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-      timerRef.current = null;
-    }
-
-    // Save the new match ID immediately to sessionStorage
-    saveActiveMatch(mid);
-
+    if (pollRef.current) { clearInterval(pollRef.current); pollRef.current = null; }
+    // NOTE: we save to sessionStorage only when match_start fires, not here
     setPhase("connecting");
     setConnected(0);
-    setError(null);
 
     const ws = createMatchSocket(mid);
     socketRef.current = ws;
-    
-    ws.onopen = () => {
-      console.log(`Connected to match ${mid}`);
-      setPhase("waiting");
-    };
+    ws.onopen = () => setPhase("waiting");
 
     ws.onmessage = (evt) => {
       const { event, data } = JSON.parse(evt.data);
@@ -286,11 +241,10 @@ export function MultiplayerGame({ onBackToMenu, user, initialMatchId }: Multipla
             // Reconnect: preserve existing scores/results, just resume
             // match_id is already in sessionStorage
           } else {
-            // Fresh start: reset state, match id already saved
-            setScores({});
-            setRoundResults([]);
-            setCorrectCountries([]);
-            setWrongCountries([]);
+            // Fresh start: save match id now (confirmed active) and reset state
+            saveActiveMatch(data.match_id ?? "");
+            setScores({}); setRoundResults([]);
+            setCorrectCountries([]); setWrongCountries([]);
           }
           break;
         case "question":
@@ -330,12 +284,16 @@ export function MultiplayerGame({ onBackToMenu, user, initialMatchId }: Multipla
           }
           break;
         case "match_end":
+          // Set phase to finished FIRST so ws.onclose sees "finished" and does nothing
+          setPhase("finished");
           cleanup();
           clearActiveMatch();
-          sessionStorage.removeItem(SESSION_MATCH_KEY);
           if (user?.id && Array.isArray(data.players)) {
             const me = data.players.find((p: any) => p.user_id === user.id);
-            if (me?.xp_earned > 0) {
+            const matchId = getActiveMatch() ?? data.match_id ?? "";
+            // Guard against duplicate XP from reconnect replaying match_end
+            if (me?.xp_earned > 0 && xpAwardedRef.current !== matchId) {
+              xpAwardedRef.current = matchId;
               addXP(me.xp_earned);
               window.dispatchEvent(new Event("xp-updated"));
             }
@@ -361,7 +319,7 @@ export function MultiplayerGame({ onBackToMenu, user, initialMatchId }: Multipla
               graceTimerRef.current = setInterval(() => {
                 setGraceCountdown(prev => {
                   if (prev === null || prev <= 1) {
-                    if (graceTimerRef.current) clearInterval(graceTimerRef.current);
+                    clearInterval(graceTimerRef.current!);
                     graceTimerRef.current = null;
                     return null;
                   }
@@ -377,10 +335,7 @@ export function MultiplayerGame({ onBackToMenu, user, initialMatchId }: Multipla
           break;
         case "opponent_reconnected":
           if (data.user_id !== user?.id) {
-            if (graceTimerRef.current) {
-              clearInterval(graceTimerRef.current);
-              graceTimerRef.current = null;
-            }
+            if (graceTimerRef.current) { clearInterval(graceTimerRef.current); graceTimerRef.current = null; }
             setGraceCountdown(null);
           }
           break;
@@ -392,7 +347,6 @@ export function MultiplayerGame({ onBackToMenu, user, initialMatchId }: Multipla
 
     ws.onerror = () => setError("Connection error.");
     ws.onclose = (e) => {
-      console.log(`WebSocket closed for match ${mid}, code: ${e.code}`);
       if (e.code !== 1000 && phaseRef.current === "playing") {
         // Preserve match id so user can reconnect
         setError("__reconnectable__");
@@ -402,20 +356,11 @@ export function MultiplayerGame({ onBackToMenu, user, initialMatchId }: Multipla
         setPhase("lobby");
       }
     };
-  }, [cleanup, initQuestion, user?.id]);
+  }, [cleanup, initQuestion, user?.id, question?.country_name]);
 
   const handleJoinQueue = useCallback(async () => {
-    if (!user) {
-      setError("You need an account to play ranked multiplayer.");
-      return;
-    }
-    
-    setError(null);
-    setPhase("queuing");
-    
-    // Clear any existing match ID before joining queue
-    clearActiveMatch();
-    
+    if (!user) { setError("You need an account to play ranked multiplayer."); return; }
+    setError(null); setPhase("queuing");
     try {
       const res = await matchmaking.joinQueue("classic");
       if (res.status === "match_found" && res.match_id) {
@@ -425,98 +370,48 @@ export function MultiplayerGame({ onBackToMenu, user, initialMatchId }: Multipla
           try {
             const status = await matchmaking.getStatus();
             if (status.status === "match_found" && status.match_id) {
-              if (pollRef.current) {
-                clearInterval(pollRef.current);
-                pollRef.current = null;
-              }
+              if (pollRef.current) { clearInterval(pollRef.current); pollRef.current = null; }
               connectToMatch(status.match_id);
             } else if (status.status === "not_in_queue") {
-              if (pollRef.current) {
-                clearInterval(pollRef.current);
-                pollRef.current = null;
-              }
-              setError("Lost queue position. Please try again.");
-              setPhase("lobby");
+              if (pollRef.current) { clearInterval(pollRef.current); pollRef.current = null; }
+              setError("Lost queue position. Please try again."); setPhase("lobby");
             }
           } catch {
-            if (pollRef.current) {
-              clearInterval(pollRef.current);
-              pollRef.current = null;
-            }
-            setError("Lost connection to matchmaking.");
-            setPhase("lobby");
+            if (pollRef.current) { clearInterval(pollRef.current); pollRef.current = null; }
+            setError("Lost connection to matchmaking."); setPhase("lobby");
           }
         }, 2000);
       }
-    } catch (e: any) {
-      setError(e.message ?? "Failed to join queue");
-      setPhase("lobby");
-    }
+    } catch (e: any) { setError(e.message ?? "Failed to join queue"); setPhase("lobby"); }
   }, [connectToMatch, user]);
 
   const handleLeaveQueue = async () => {
     try { await matchmaking.leaveQueue(); } catch {}
-    resetState();
-    setPhase("lobby");
+    resetState(); setPhase("lobby");
   };
 
   const handlePlayAgain = useCallback(() => {
-    // 1. Clear all state first
-    resetState();
-    
-    // 2. Clear sessionStorage immediately
-    clearActiveMatch();
-    
-    // 3. Close existing WebSocket if any
+    // Detach onclose BEFORE resetState/cleanup so the finishing socket's
+    // close event doesn't trigger reconnect logic on the new match
     if (socketRef.current) {
       socketRef.current.onclose = null;
-      socketRef.current.close(1000, "Manual disconnect for new game");
-      socketRef.current = null;
+      socketRef.current.onerror = null;
     }
-    
-    // 4. Clear all timers
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-      timerRef.current = null;
-    }
-    if (pollRef.current) {
-      clearInterval(pollRef.current);
-      pollRef.current = null;
-    }
-    if (graceTimerRef.current) {
-      clearInterval(graceTimerRef.current);
-      graceTimerRef.current = null;
-    }
-    
-    // 5. Small delay before joining new queue
-    setTimeout(() => handleJoinQueue(), 100);
+    resetState();
+    setTimeout(() => handleJoinQueue(), 50);
   }, [resetState, handleJoinQueue]);
 
   // ── Reconnect to the same match after own disconnect ──────────────────────
   const handleReconnect = useCallback(() => {
     const mid = getActiveMatch();
     if (!mid) return;
-    
-    // Clean up all existing connections and timers
-    if (timerRef.current) clearInterval(timerRef.current);
-    if (pollRef.current) clearInterval(pollRef.current);
+    if (timerRef.current)      clearInterval(timerRef.current);
+    if (pollRef.current)       clearInterval(pollRef.current);
     if (graceTimerRef.current) clearInterval(graceTimerRef.current);
-    if (socketRef.current) {
-      socketRef.current.onclose = null;
-      socketRef.current.close();
-      socketRef.current = null;
-    }
-    
-    timerRef.current = null;
-    pollRef.current = null;
-    graceTimerRef.current = null;
-    
-    setMatchEnd(null);
-    setError(null);
-    setGraceCountdown(null);
-    setOpponentAnswered(false);
-    setOpponentCorrect(null);
-    
+    if (socketRef.current)     { socketRef.current.onclose = null; socketRef.current.close(); }
+    socketRef.current = null; timerRef.current = null; pollRef.current = null; graceTimerRef.current = null;
+    setMatchEnd(null); setError(null); setGraceCountdown(null);
+    setOpponentAnswered(false); setOpponentCorrect(null);
     connectToMatch(mid);
   }, [connectToMatch]);
 
