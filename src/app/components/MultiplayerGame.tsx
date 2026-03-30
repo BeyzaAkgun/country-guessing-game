@@ -134,6 +134,7 @@ export function MultiplayerGame({ onBackToMenu, user, initialMatchId }: Multipla
     setGraceCountdown(null);
     clearActiveMatch();
     xpAwardedRef.current = null;
+    sessionStorage.removeItem("mp_xp_awarded_match");
   }, [cleanup]);
 
   // ── Init a new round question ─────────────────────────────────────────────
@@ -286,14 +287,17 @@ export function MultiplayerGame({ onBackToMenu, user, initialMatchId }: Multipla
         case "match_end":
           // Set phase to finished FIRST so ws.onclose sees "finished" and does nothing
           setPhase("finished");
+          clearActiveMatch(); // clear BEFORE cleanup so onclose also sees no match
           cleanup();
-          clearActiveMatch();
           if (user?.id && Array.isArray(data.players)) {
             const me = data.players.find((p: any) => p.user_id === user.id);
             const matchId = getActiveMatch() ?? data.match_id ?? "";
-            // Guard against duplicate XP from reconnect replaying match_end
-            if (me?.xp_earned > 0 && xpAwardedRef.current !== matchId) {
+            // Guard against duplicate XP — check both ref (in-session) and sessionStorage (cross-navigation)
+            const alreadyAwarded = xpAwardedRef.current === matchId ||
+              sessionStorage.getItem("mp_xp_awarded_match") === matchId;
+            if (me?.xp_earned > 0 && !alreadyAwarded) {
               xpAwardedRef.current = matchId;
+              sessionStorage.setItem("mp_xp_awarded_match", matchId);
               addXP(me.xp_earned);
               window.dispatchEvent(new Event("xp-updated"));
             }
@@ -347,15 +351,18 @@ export function MultiplayerGame({ onBackToMenu, user, initialMatchId }: Multipla
 
     ws.onerror = () => setError("Connection error.");
     ws.onclose = (e) => {
-      if (e.code !== 1000 && phaseRef.current === "playing") {
-        // Preserve match id so user can reconnect
+    if (e.code !== 1000) {
+      if (phaseRef.current === "playing") {
         setError("__reconnectable__");
         setPhase("lobby");
-      } else if (e.code !== 1000 && phaseRef.current !== "finished") {
+      } else if (phaseRef.current === "finished") {
+        clearActiveMatch();
+      } else {
         setError("Disconnected from match.");
         setPhase("lobby");
-      }
-    };
+    }
+  }
+};
   }, [cleanup, initQuestion, user?.id, question?.country_name]);
 
   const handleJoinQueue = useCallback(async () => {
