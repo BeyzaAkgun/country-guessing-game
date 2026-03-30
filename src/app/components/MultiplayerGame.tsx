@@ -351,18 +351,18 @@ export function MultiplayerGame({ onBackToMenu, user, initialMatchId }: Multipla
 
     ws.onerror = () => setError("Connection error.");
     ws.onclose = (e) => {
-      if (e.code !== 1000) {
-        if (phaseRef.current === "playing") {
-          setError("__reconnectable__");
-          setPhase("lobby");
-      }   else if (phaseRef.current === "finished") {
-          clearActiveMatch();
-    }     else {
-          setError("Disconnected from match.");
-          setPhase("lobby");
-    }
-  }
-};
+      if (e.code !== 1000 && phaseRef.current === "playing") {
+        // Preserve match id so user can reconnect
+        setError("__reconnectable__");
+        setPhase("lobby");
+      } else if (phaseRef.current === "finished") {
+        // Match is done — clear match ID so reconnect screen never appears again
+        clearActiveMatch();
+      } else if (e.code !== 1000 && phaseRef.current !== "finished") {
+        setError("Disconnected from match.");
+        setPhase("lobby");
+      }
+    };
   }, [cleanup, initQuestion, user?.id, question?.country_name]);
 
   const handleJoinQueue = useCallback(async () => {
