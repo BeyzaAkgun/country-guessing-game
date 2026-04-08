@@ -6,6 +6,13 @@ Test your geography knowledge by finding countries on a world map — using hint
 
 ![Game Modes](https://via.placeholder.com/800x400?text=Country+Guessing+Game)
 
+## 🎮 Live Demo
+
+**Play now:** [https://country-guessing-game-five.vercel.app/](https://country-guessing-game-five.vercel.app/)
+
+- Frontend hosted on **Vercel**
+- Backend API hosted on **Fly.io**
+
 ## Game Modes
 
 | Mode | Description |

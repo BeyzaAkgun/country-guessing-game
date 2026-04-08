@@ -1,4 +1,4 @@
-// getRandomHint.ts - Updated: Tracks used hints to avoid duplicates
+// getRandomHint.ts 
 import { countryHints } from "@/app/data/countryHints";
 
 export function getRandomHint(

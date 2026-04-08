@@ -6,14 +6,18 @@ import { getXPState, getLevelTitle, loadTotalXP, type XPState } from "@/app/util
 
 interface LevelBadgeProps {
   xpVersion?: number;
+  isGuest?: boolean;
 }
 
-export function LevelBadge({ xpVersion = 0 }: LevelBadgeProps) {
+export function LevelBadge({ xpVersion = 0, isGuest = false }: LevelBadgeProps) {
   const [xpState, setXpState] = useState<XPState>(() => getXPState(loadTotalXP()));
   const [showPopup, setShowPopup] = useState(false);
   const prevLevel = useRef(xpState.level);
 
   useEffect(() => {
+    // Don't track level-ups or read XP for guests
+    if (isGuest) return;
+
     const newState = getXPState(loadTotalXP());
     if (newState.level > prevLevel.current) {
       setShowPopup(true);
@@ -21,7 +25,10 @@ export function LevelBadge({ xpVersion = 0 }: LevelBadgeProps) {
     }
     prevLevel.current = newState.level;
     setXpState(newState);
-  }, [xpVersion]);
+  }, [xpVersion, isGuest]);
+
+  // Guests see nothing
+  if (isGuest) return null;
 
   const pct = xpState.xpForNextLevel > 0
     ? Math.min((xpState.xpInCurrentLevel / xpState.xpForNextLevel) * 100, 100)

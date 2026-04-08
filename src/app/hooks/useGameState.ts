@@ -1,4 +1,4 @@
-// useGameState.ts - Updated: Saves selected/target country
+// useGameState.ts 
 import { useState, useEffect } from "react";
 
 export interface Hint {

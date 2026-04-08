@@ -1,4 +1,3 @@
-//GAMEFAB.TSX WITH BACKEND INTEGRATION
 // GameFAB.tsx - Universal floating action button, always on screen everywhere
 import React, { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
@@ -22,20 +21,23 @@ export function GameFAB({ onTVModeChange, onLogout, onShowAuth, user }: GameFABP
   const [soundEnabled, setSoundEnabled] = useState(() => {
     try { return localStorage.getItem("geogame_sound") !== "false"; } catch { return true; }
   });
-  const [xpTick, setXpTick] = useState(0); // increments when XP changes, forcing re-render
+  const [xpTick, setXpTick] = useState(0);
   const { config, toggleTVMode } = useDisplayMode();
 
-  // Listen for XP updates from multiplayer match endings
   useEffect(() => {
     const handler = () => setXpTick(t => t + 1);
     window.addEventListener("xp-updated", handler);
     return () => window.removeEventListener("xp-updated", handler);
   }, []);
 
-  const xpState = getXPState(loadTotalXP());
-  const levelPct = xpState.xpForNextLevel > 0
-    ? Math.min((xpState.xpInCurrentLevel / xpState.xpForNextLevel) * 100, 100)
-    : 100;
+  // Guests never see XP/level data — use a zero state so nothing leaks through
+  const isGuest = !user;
+  const xpState = isGuest ? getXPState(0) : getXPState(loadTotalXP());
+  const levelPct = isGuest
+    ? 0
+    : xpState.xpForNextLevel > 0
+      ? Math.min((xpState.xpInCurrentLevel / xpState.xpForNextLevel) * 100, 100)
+      : 100;
 
   const handleToggleSound = useCallback(() => {
     const next = soundEffects.toggle();
@@ -104,14 +106,17 @@ export function GameFAB({ onTVModeChange, onLogout, onShowAuth, user }: GameFABP
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-3">
                     <div className="w-11 h-11 rounded-xl bg-white/20 flex items-center justify-center">
-                      <span className="text-xl font-black text-white">{xpState.level}</span>
+                      {isGuest
+                        ? <User className="w-6 h-6 text-white/80" />
+                        : <span className="text-xl font-black text-white">{xpState.level}</span>
+                      }
                     </div>
                     <div>
                       <p className="text-white font-bold text-sm leading-tight">
-                        {user?.username ?? getLevelTitle(xpState.level)}
+                        {isGuest ? "Guest" : (user?.username ?? getLevelTitle(xpState.level))}
                       </p>
                       <p className="text-indigo-200 text-xs">
-                        {user ? `${xpState.totalXP} XP total` : "Playing as guest"}
+                        {isGuest ? "Sign in to save progress" : `${xpState.totalXP} XP total`}
                       </p>
                     </div>
                   </div>
@@ -122,29 +127,38 @@ export function GameFAB({ onTVModeChange, onLogout, onShowAuth, user }: GameFABP
                     <X className="w-4 h-4 text-white" />
                   </button>
                 </div>
-                <div className="w-full h-1.5 bg-white/20 rounded-full overflow-hidden">
-                  <motion.div
-                    initial={{ width: 0 }} animate={{ width: `${levelPct}%` }}
-                    transition={{ duration: 0.6, ease: "easeOut" }}
-                    className="h-full bg-white/80 rounded-full"
-                  />
-                </div>
-                {xpState.level < 10 && (
-                  <p className="text-indigo-200 text-[10px] mt-1">
-                    {xpState.xpForNextLevel - xpState.xpInCurrentLevel} XP to Level {xpState.level + 1}
-                  </p>
+
+                {/* Only show XP bar for logged-in users */}
+                {!isGuest && (
+                  <>
+                    <div className="w-full h-1.5 bg-white/20 rounded-full overflow-hidden">
+                      <motion.div
+                        initial={{ width: 0 }} animate={{ width: `${levelPct}%` }}
+                        transition={{ duration: 0.6, ease: "easeOut" }}
+                        className="h-full bg-white/80 rounded-full"
+                      />
+                    </div>
+                    {xpState.level < 10 && (
+                      <p className="text-indigo-200 text-[10px] mt-1">
+                        {xpState.xpForNextLevel - xpState.xpInCurrentLevel} XP to Level {xpState.level + 1}
+                      </p>
+                    )}
+                  </>
                 )}
               </div>
 
               {/* Menu items */}
               <div className="p-2">
-                <DrawerItem
-                  icon={<User className="w-4 h-4 text-indigo-500" />}
-                  label="Profile & Stats"
-                  sub="XP, levels, all-mode records"
-                  bg="bg-indigo-50 dark:bg-indigo-900/20"
-                  onClick={handleOpenStats}
-                />
+                {/* Profile & Stats only shown to logged-in users */}
+                {!isGuest && (
+                  <DrawerItem
+                    icon={<User className="w-4 h-4 text-indigo-500" />}
+                    label="Profile & Stats"
+                    sub="XP, levels, all-mode records"
+                    bg="bg-indigo-50 dark:bg-indigo-900/20"
+                    onClick={handleOpenStats}
+                  />
+                )}
                 <DrawerItem
                   icon={<Tv2 className="w-4 h-4 text-blue-500" />}
                   label="Classroom / TV Mode"
@@ -169,7 +183,6 @@ export function GameFAB({ onTVModeChange, onLogout, onShowAuth, user }: GameFABP
                   }
                 />
 
-                {/* Sign In (guest) or Sign Out (authenticated) */}
                 {!user && onShowAuth && (
                   <DrawerItem
                     icon={<LogIn className="w-4 h-4 text-emerald-500" />}
@@ -192,7 +205,7 @@ export function GameFAB({ onTVModeChange, onLogout, onShowAuth, user }: GameFABP
 
               <div className="px-4 pb-3 pt-1">
                 <p className="text-[10px] text-center text-slate-400 dark:text-slate-500">
-                  Geography Master · Your progress saves automatically
+                  Geography Master · {isGuest ? "Sign in to save your progress" : "Your progress saves automatically"}
                 </p>
               </div>
             </div>
@@ -200,34 +213,44 @@ export function GameFAB({ onTVModeChange, onLogout, onShowAuth, user }: GameFABP
         )}
       </AnimatePresence>
 
-      {/* FAB button */}
+      {/* FAB button — no level number or XP ring for guests */}
       <motion.button
         onClick={() => setIsOpen(prev => !prev)}
         whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.94 }}
         className="fixed bottom-5 right-4 sm:bottom-6 sm:right-6 z-[200] w-14 h-14 sm:w-16 sm:h-16 rounded-2xl shadow-2xl flex items-center justify-center overflow-hidden"
         style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6, #ec4899)" }}
-        title="Profile & Settings"
+        title={isGuest ? "Guest — Sign in to save progress" : "Profile & Settings"}
       >
         <AnimatePresence mode="wait">
           {isOpen ? (
             <motion.div key="x" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.2 }}>
               <X className="w-6 h-6 text-white" />
             </motion.div>
+          ) : isGuest ? (
+            // Guest: plain person icon, no level number, no XP ring
+            <motion.div key="guest" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.2 }}>
+              <User className="w-6 h-6 text-white" />
+            </motion.div>
           ) : (
+            // Logged-in: level number + star
             <motion.div key="fab" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.2 }} className="flex flex-col items-center">
               <span className="text-lg font-black text-white leading-none">{xpState.level}</span>
               <Star className="w-3 h-3 text-yellow-300 mt-0.5" />
             </motion.div>
           )}
         </AnimatePresence>
-        <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 56 56">
-          <circle cx="28" cy="28" r="26" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="2.5" />
-          <circle cx="28" cy="28" r="26" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="2.5"
-            strokeDasharray={`${2 * Math.PI * 26}`}
-            strokeDashoffset={`${2 * Math.PI * 26 * (1 - levelPct / 100)}`}
-            strokeLinecap="round" className="transition-all duration-700"
-          />
-        </svg>
+
+        {/* XP progress ring — only rendered for logged-in users */}
+        {!isGuest && (
+          <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 56 56">
+            <circle cx="28" cy="28" r="26" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="2.5" />
+            <circle cx="28" cy="28" r="26" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="2.5"
+              strokeDasharray={`${2 * Math.PI * 26}`}
+              strokeDashoffset={`${2 * Math.PI * 26 * (1 - levelPct / 100)}`}
+              strokeLinecap="round" className="transition-all duration-700"
+            />
+          </svg>
+        )}
       </motion.button>
 
       <GlobalStatsScreen isOpen={showGlobalStats} onClose={() => setShowGlobalStats(false)} />
