@@ -1,4 +1,5 @@
 // Globe3D.tsx - Bright version with beautiful star background
+
 import React, { useRef, useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { Maximize2, Map } from "lucide-react";
@@ -358,3 +359,39 @@ export function Globe3D({ onTransitionToMap, showButton = true }: Globe3DProps) 
     </div>
   );
 }
+
+
+// import React from "react";
+// import { motion } from "motion/react";
+// import { Map } from "lucide-react";
+
+// interface Globe3DProps {
+//   onTransitionToMap: () => void;
+//   showButton?: boolean;
+// }
+
+// export function Globe3D({ onTransitionToMap, showButton = true }: Globe3DProps) {
+//   return (
+//     <div className="relative w-screen h-screen bg-gradient-to-b from-black via-slate-900 to-slate-800 flex items-center justify-center">
+//       {showButton && (
+//         <div className="text-center px-4">
+//           <h1 className="text-2xl sm:text-4xl md:text-6xl font-bold text-white mb-3 drop-shadow-2xl">
+//             Geography Master
+//           </h1>
+//           <p className="text-white/90 text-sm sm:text-lg mb-8">
+//             Explore the world
+//           </p>
+//           <motion.button
+//             initial={{ opacity: 0, scale: 0.8 }}
+//             animate={{ opacity: 1, scale: 1 }}
+//             onClick={onTransitionToMap}
+//             className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-2xl font-bold text-lg shadow-2xl flex items-center gap-3 mx-auto active:scale-95"
+//           >
+//             <Map className="w-6 h-6" />
+//             Start Playing
+//           </motion.button>
+//         </div>
+//       )}
+//     </div>
+//   );
+// }
