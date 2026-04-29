@@ -353,10 +353,14 @@ export function GameControls({
             // pb accounts for iOS home bar (safe-area-inset-bottom)
             // style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
             className="fixed sm:absolute z-40 left-0 right-0 sm:left-1/2 sm:-translate-x-1/2 sm:right-auto sm:w-[500px] sm:bottom-5"
-            style={{ bottom: 'max(20px, env(safe-area-inset-bottom, 20px))' }}
+            style={{ 
+              bottom: 'env(safe-area-inset-bottom, 0px)',
+              maxHeight: '80vh',
+              overflow: 'auto'
+            }}
           >
             {/* <div className="bg-white dark:bg-slate-900 shadow-2xl border-t sm:border border-border/50 rounded-t-3xl sm:rounded-3xl p-4 sm:p-5"> */}
-                <div className="bg-white dark:bg-slate-900 shadow-2xl border-t sm:border border-border/50 rounded-t-3xl sm:rounded-3xl p-4 sm:p-5"
+                <div className="bg-white dark:bg-slate-900 shadow-2xl border-t sm:border border-border/50 rounded-t-3xl sm:rounded-3xl p-4 sm:p-5 max-h-[60vh] overflow-y-auto"
     style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 16px)' }}>
               {/* Mobile drag handle */}
               <div className="w-10 h-1 bg-slate-200 dark:bg-slate-700 rounded-full mx-auto mb-3 sm:hidden" />
