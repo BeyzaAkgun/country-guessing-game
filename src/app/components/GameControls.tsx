@@ -106,7 +106,7 @@
 //           <motion.div
 //             initial={{ y: 120, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 120, opacity: 0 }}
 //             transition={{ type: "spring", damping: 26, stiffness: 320 }}
-//             className="absolute z-40 bottom-0 left-0 right-0 sm:bottom-5 sm:left-1/2 sm:-translate-x-1/2 sm:right-auto sm:w-[500px]"
+//             className="absolute z-40 bottom-16 left-0 right-0 sm:bottom-5 sm:left-1/2 sm:-translate-x-1/2 sm:right-auto sm:w-[500px]"
 //           >
 //             <div className="bg-white dark:bg-slate-900 shadow-2xl border-t sm:border border-border/50 rounded-t-3xl sm:rounded-3xl p-4 sm:p-5">
 //               <div className="w-10 h-1 bg-slate-200 dark:bg-slate-700 rounded-full mx-auto mb-3 sm:hidden" />
@@ -131,8 +131,7 @@
 //                     onFocus={() => setShowSuggestions(true)}
 //                     placeholder="Type country name..."
 //                     className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl sm:rounded-2xl py-3.5 sm:py-4 pl-4 sm:pl-5 pr-12 text-base sm:text-lg focus:ring-2 focus:ring-blue-500/50 outline-none"
-//                     autoFocus
-//                   />
+//                     autoFocus                     inputMode="text"//                   />
 //                   <button type="submit" className="absolute right-2 p-2 sm:p-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg sm:rounded-xl transition-colors active:scale-95">
 //                     <Check className="w-4 h-4 sm:w-5 sm:h-5" />
 //                   </button>
@@ -324,11 +323,16 @@ export function GameControls({
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 120, opacity: 0 }}
             transition={{ type: "spring", damping: 26, stiffness: 320 }}
-            className="absolute z-40 bottom-0 left-0 right-0 sm:bottom-5 sm:left-1/2 sm:-translate-x-1/2 sm:right-auto sm:w-[500px]"
+            // className="absolute z-40 bottom-0 left-0 right-0 sm:bottom-5 sm:left-1/2 sm:-translate-x-1/2 sm:right-auto sm:w-[500px]"
+           
             // pb accounts for iOS home bar (safe-area-inset-bottom)
-            style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
+            // style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
+            className="absolute z-40 left-0 right-0 sm:left-1/2 sm:-translate-x-1/2 sm:right-auto sm:w-[500px] sm:bottom-5"
+  style={{ bottom: 0 }}
           >
-            <div className="bg-white dark:bg-slate-900 shadow-2xl border-t sm:border border-border/50 rounded-t-3xl sm:rounded-3xl p-4 sm:p-5">
+            {/* <div className="bg-white dark:bg-slate-900 shadow-2xl border-t sm:border border-border/50 rounded-t-3xl sm:rounded-3xl p-4 sm:p-5"> */}
+                <div className="bg-white dark:bg-slate-900 shadow-2xl border-t sm:border border-border/50 rounded-t-3xl sm:rounded-3xl p-4 sm:p-5"
+    style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 16px)' }}>
               {/* Mobile drag handle */}
               <div className="w-10 h-1 bg-slate-200 dark:bg-slate-700 rounded-full mx-auto mb-3 sm:hidden" />
 
@@ -416,8 +420,10 @@ export function GameControls({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
-            className="absolute bottom-5 sm:bottom-8 left-1/2 -translate-x-1/2 pointer-events-none z-10"
-            style={{ marginBottom: "env(safe-area-inset-bottom, 0px)" }}
+            // className="absolute bottom-5 sm:bottom-8 left-1/2 -translate-x-1/2 pointer-events-none z-10"
+            // style={{ marginBottom: "env(safe-area-inset-bottom, 0px)" }}
+             className="absolute left-1/2 -translate-x-1/2 pointer-events-none z-10"
+  style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 80px)' }}
           >
             <div className="bg-black/80 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-full backdrop-blur-sm text-sm font-medium shadow-2xl whitespace-nowrap">
               👆 Tap any country to start guessing

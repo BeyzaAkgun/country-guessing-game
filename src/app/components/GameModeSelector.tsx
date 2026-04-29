@@ -484,30 +484,19 @@ export function GameModeSelector({ onSelectMode }: GameModeSelectorProps) {
 
             {/* Top 4 cards */}
             <div
-              className={isTV
-                ? ""
-                : "grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mb-2 sm:mb-3"}
-              style={isTV ? {
-                display: "grid",
-                gridTemplateColumns: "repeat(4, 1fr)",
-                gap: 24,
-                marginBottom: 24,
-              } : undefined}
-            >
+  className={isTV ? "" : "grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mb-2 sm:mb-3"}
+  style={isTV ? { display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 24, marginBottom: 24 } : undefined}
+>
               {cards.slice(0, 4).map(card =>
                 <ModeCard key={card.mode} card={card} onSelectMode={onSelectMode} isTV={isTV} />
               )}
             </div>
 
             {/* Bottom 4 cards */}
-            <div
-              className={isTV ? "" : "grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3"}
-              style={isTV ? {
-                display: "grid",
-                gridTemplateColumns: "repeat(4, 1fr)",
-                gap: 24,
-              } : undefined}
-            >
+           <div
+  className={isTV ? "" : "grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3"}
+  style={isTV ? { display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 24 } : undefined}
+>
               {cards.slice(4).map(card =>
                 <ModeCard key={card.mode} card={card} onSelectMode={onSelectMode} isTV={isTV} />
               )}

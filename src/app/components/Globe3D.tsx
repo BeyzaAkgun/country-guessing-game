@@ -31,7 +31,7 @@ export function Globe3D({ onTransitionToMap, showButton = true }: Globe3DProps) 
 
     // Camera setup
     const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-    camera.position.z = 2.8;
+    camera.position.z = window.innerWidth < 768 ? 3.5 : 2.8; // Zoom out on mobile
     cameraRef.current = camera;
 
     // Renderer setup with alpha for transparent background
@@ -310,7 +310,9 @@ export function Globe3D({ onTransitionToMap, showButton = true }: Globe3DProps) 
 
   return (
     <div 
-      className="relative w-screen h-screen bg-gradient-to-b from-black via-slate-900 to-slate-800 overflow-hidden"
+      // className="relative w-screen h-screen bg-gradient-to-b from-black via-slate-900 to-slate-800 overflow-hidden"
+       className="relative w-screen bg-gradient-to-b from-black via-slate-900 to-slate-800 overflow-hidden" style={{ height: '100dvh' }}
+
       onDoubleClick={onTransitionToMap}
     >
       <canvas 
@@ -333,14 +335,19 @@ export function Globe3D({ onTransitionToMap, showButton = true }: Globe3DProps) 
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className="absolute top-8 left-1/2 -translate-x-1/2 text-center pointer-events-none z-10"
+            // className="absolute top-8 left-1/2 -translate-x-1/2 text-center pointer-events-none z-10"
+            className="absolute top-6 sm:top-8 left-0 right-0 text-center pointer-events-none z-10 px-4"
           >
-            <h1 className="text-4xl md:text-6xl font-bold text-white mb-3 drop-shadow-2xl">
+           <h1 className="text-2xl sm:text-4xl md:text-6xl font-bold text-white mb-2 sm:mb-3 drop-shadow-2xl">
+            {/* <h1 className="text-2xl sm:text-4xl md:text-6xl font-bold text-white mb-2 drop-shadow-2xl"> */}
               Geography Master
             </h1>
-            <p className="text-white/90 text-lg drop-shadow-lg">
+            {/* <p className="text-white/90 text-lg drop-shadow-lg">
               Drag to rotate • Double-click to explore
-            </p>
+            </p> */}
+            <p className="text-white/90 text-sm sm:text-lg drop-shadow-lg">
+           Drag to rotate · Tap to explore
+          </p>
           </motion.div>
 
           <motion.button
@@ -348,8 +355,10 @@ export function Globe3D({ onTransitionToMap, showButton = true }: Globe3DProps) 
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 1 }}
             onClick={onTransitionToMap}
-            className="absolute bottom-12 left-1/2 -translate-x-1/2 px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-2xl font-bold text-lg shadow-2xl flex items-center gap-3 transition-all hover:scale-105 active:scale-95 z-20"
-          >
+            // className="absolute bottom-24 sm:bottom-12 left-1/2 -translate-x-1/2 px-6 sm:px-8 py-3.5 sm:py-4
+  className="absolute left-1/2 -translate-x-1/2 px-6 sm:px-8 py-3.5 sm:py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-2xl font-bold text-base sm:text-lg shadow-2xl flex items-center gap-2 sm:gap-3 transition-all hover:scale-105 active:scale-95 z-20"
+  style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 80px)' }}
+>
             <Map className="w-6 h-6" />
             Start Playing
             <Maximize2 className="w-5 h-5" />

@@ -201,11 +201,17 @@ export default function App() {
       {renderContent()}
 
       {/* GLOBAL FAB — passes onShowAuth so guest can sign in from anywhere */}
-      <GameFAB
+      {/* <GameFAB
         onLogout={logout}
         user={user}
         onShowAuth={() => setViewMode("auth")}
-      />
+      /> */}
+<GameFAB
+    onLogout={logout}
+    user={user}
+    onShowAuth={() => setViewMode("auth")}
+    inGame={viewMode === "game"}
+  />
     </div>
   );
 }

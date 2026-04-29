@@ -8,14 +8,23 @@ import { soundEffects } from "@/app/utils/soundEffects";
 import { useDisplayMode } from "@/app/hooks/useDisplayMode";
 import type { StoredUser } from "@/api/client";
 
-interface GameFABProps {
-  onTVModeChange?: (isTV: boolean) => void;
-  onLogout?: () => void;
-  onShowAuth?: () => void;
-  user?: StoredUser | null;
-}
+// interface GameFABProps {
+//   onTVModeChange?: (isTV: boolean) => void;
+//   onLogout?: () => void;
+//   onShowAuth?: () => void;
+//   user?: StoredUser | null;
+// }
 
-export function GameFAB({ onTVModeChange, onLogout, onShowAuth, user }: GameFABProps) {
+  interface GameFABProps {
+    onTVModeChange?: (isTV: boolean) => void;
+    onLogout?: () => void;
+    onShowAuth?: () => void;
+    user?: StoredUser | null;
+    inGame?: boolean;
+  }
+
+// export function GameFAB({ onTVModeChange, onLogout, onShowAuth, user }: GameFABProps) {
+export function GameFAB({ onTVModeChange, onLogout, onShowAuth, user, inGame = false }: GameFABProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [showGlobalStats, setShowGlobalStats] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(() => {
@@ -217,9 +226,15 @@ export function GameFAB({ onTVModeChange, onLogout, onShowAuth, user }: GameFABP
       <motion.button
         onClick={() => setIsOpen(prev => !prev)}
         whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.94 }}
-        className="fixed bottom-5 right-4 sm:bottom-6 sm:right-6 z-[200] w-14 h-14 sm:w-16 sm:h-16 rounded-2xl shadow-2xl flex items-center justify-center overflow-hidden"
-        style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6, #ec4899)" }}
-        title={isGuest ? "Guest — Sign in to save progress" : "Profile & Settings"}
+        // className="fixed
+        // bottom-5
+        
+        //   right-4 sm:bottom-6 sm:right-6 z-[200] w-14 h-14 sm:w-16 sm:h-16 rounded-2xl shadow-2xl flex items-center justify-center overflow-hidden"
+        // style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6, #ec4899)" }}
+        // title={isGuest ? "Guest — Sign in to save progress" : "Profile & Settings"}
+        className="fixed right-4 sm:right-6 z-[200] w-14 h-14 sm:w-16 sm:h-16 rounded-2xl shadow-2xl flex items-center justify-center overflow-hidden"
+        style={{ bottom: inGame ? 'calc(env(safe-area-inset-bottom, 0px) + 140px)' : 'calc(env(safe-area-inset-bottom, 0px) + 20px)' }}
+
       >
         <AnimatePresence mode="wait">
           {isOpen ? (

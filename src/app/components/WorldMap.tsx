@@ -435,7 +435,8 @@ const WorldMap = ({
       )}
 
       {/* Legend */}
-      <div className="absolute bottom-3 left-3 flex gap-3 text-xs font-mono opacity-70 pointer-events-none">
+      {/* <div className="absolute bottom-3 left-3 flex gap-3 text-xs font-mono opacity-70 pointer-events-none"> */}
+         <div className="absolute bottom-3 left-3 z-10 flex gap-3 text-xs font-mono opacity-70 pointer-events-none">
         <div className="flex items-center gap-1.5">
           <div className={`w-2.5 h-2.5 rounded-full ${isDarkMode ? "bg-emerald-600" : "bg-emerald-500"}`} />
           <span className={isDarkMode ? "text-slate-300" : "text-slate-600"}>Correct</span>
