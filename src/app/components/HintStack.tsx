@@ -74,11 +74,10 @@ export function HintStack({
       className="absolute top-20 right-4 z-30 w-80 max-w-[calc(100vw-2rem)]"
     >
       {/* Header */}
-      <div className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg rounded-t-2xl border border-b-0 border-white/30 shadow-lg">
+      <div className={`bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg shadow-lg ${isExpanded ? 'rounded-t-2xl border border-b-0 border-white/30' : 'rounded-2xl border border-white/30'}`}>
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="w-full px-4 py-3 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors rounded-t-2xl"
-        >
+          className={`w-full px-4 py-3 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors ${isExpanded ? 'rounded-t-2xl' : 'rounded-2xl'}`}        >
           <div className="flex items-center gap-2">
             <Lightbulb className="w-5 h-5 text-yellow-500" />
             <span className="font-semibold text-sm">Hint Stack</span>
