@@ -352,8 +352,8 @@ export function GameControls({
            
             // pb accounts for iOS home bar (safe-area-inset-bottom)
             // style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
-            className="absolute z-40 left-0 right-0 sm:left-1/2 sm:-translate-x-1/2 sm:right-auto sm:w-[500px] sm:bottom-5"
-  style={{ bottom: 0 }}
+            className="fixed sm:absolute z-40 left-0 right-0 sm:left-1/2 sm:-translate-x-1/2 sm:right-auto sm:w-[500px] sm:bottom-5"
+            style={{ bottom: 'max(20px, env(safe-area-inset-bottom, 20px))' }}
           >
             {/* <div className="bg-white dark:bg-slate-900 shadow-2xl border-t sm:border border-border/50 rounded-t-3xl sm:rounded-3xl p-4 sm:p-5"> */}
                 <div className="bg-white dark:bg-slate-900 shadow-2xl border-t sm:border border-border/50 rounded-t-3xl sm:rounded-3xl p-4 sm:p-5"
@@ -393,7 +393,13 @@ export function GameControls({
                     type="text"
                     value={input}
                     onChange={e => { setInput(e.target.value); setShowSuggestions(true); }}
-                    onFocus={() => setShowSuggestions(true)}
+                    onFocus={(e) => {
+                      setShowSuggestions(true);
+                      // Scroll input into view after keyboard appears
+                      setTimeout(() => {
+                        e.currentTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                      }, 300);
+                    }}
                     placeholder="Type country name..."
                     // font-size ≥16px prevents iOS auto-zoom on input focus
                     className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl sm:rounded-2xl py-3.5 sm:py-4 pl-4 sm:pl-5 pr-14 text-base focus:ring-2 focus:ring-blue-500/50 outline-none"
