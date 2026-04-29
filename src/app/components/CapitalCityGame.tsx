@@ -384,6 +384,7 @@ export function CapitalCityGame({ onBackToMenu }: CapitalCityGameProps) {
 
   const handleSkip = () => {
     if (!localTargetCountry) return;
+    setCardVisible(false);
     setShowAnswer(true);
     if (soundEnabled) soundEffects.playWrong();
 
@@ -535,7 +536,7 @@ export function CapitalCityGame({ onBackToMenu }: CapitalCityGameProps) {
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.8, opacity: 0 }}
-            className="absolute inset-0 z-50 flex items-center justify-center pointer-events-none"
+            className="absolute inset-0 z-[70] flex items-center justify-center pointer-events-none"
           >
             <div className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-md rounded-3xl shadow-2xl p-8 border-4 border-red-400 text-center max-w-sm mx-4">
               <p className="text-5xl mb-3">😅</p>
