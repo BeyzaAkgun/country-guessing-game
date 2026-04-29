@@ -106,7 +106,7 @@
 //           <motion.div
 //             initial={{ y: 120, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 120, opacity: 0 }}
 //             transition={{ type: "spring", damping: 26, stiffness: 320 }}
-//             className="absolute z-40 bottom-16 left-0 right-0 sm:bottom-5 sm:left-1/2 sm:-translate-x-1/2 sm:right-auto sm:w-[500px]"
+//             className="absolute z-40 bottom-4 left-0 right-0 sm:bottom-5 sm:left-1/2 sm:-translate-x-1/2 sm:right-auto sm:w-[500px]"
 //           >
 //             <div className="bg-white dark:bg-slate-900 shadow-2xl border-t sm:border border-border/50 rounded-t-3xl sm:rounded-3xl p-4 sm:p-5">
 //               <div className="w-10 h-1 bg-slate-200 dark:bg-slate-700 rounded-full mx-auto mb-3 sm:hidden" />
@@ -131,7 +131,8 @@
 //                     onFocus={() => setShowSuggestions(true)}
 //                     placeholder="Type country name..."
 //                     className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl sm:rounded-2xl py-3.5 sm:py-4 pl-4 sm:pl-5 pr-12 text-base sm:text-lg focus:ring-2 focus:ring-blue-500/50 outline-none"
-//                     autoFocus                     inputMode="text"//                   />
+//                     autoFocus
+//                   />
 //                   <button type="submit" className="absolute right-2 p-2 sm:p-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg sm:rounded-xl transition-colors active:scale-95">
 //                     <Check className="w-4 h-4 sm:w-5 sm:h-5" />
 //                   </button>
@@ -178,7 +179,7 @@
 
 
 // GameControls.tsx - Per-game top bar. TV + Profile handled by root GameFAB.
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Search, MapPin, HelpCircle, Check, Globe, RotateCcw, Home, BarChart3, Trophy, Volume2, VolumeX } from "lucide-react";
 import { LevelBadge } from "@/app/components/LevelBadge";
@@ -209,9 +210,32 @@ export function GameControls({
 }: GameControlsProps) {
   const [input, setInput] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  // Scroll input into view when it's focused (mobile keyboard handling)
+  useEffect(() => {
+    if (!inputRef.current) return;
+    
+    const handleFocus = () => {
+      // Delay slightly to let keyboard appear, then scroll
+      setTimeout(() => {
+        inputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 100);
+    };
+
+    const input = inputRef.current;
+    input.addEventListener('focus', handleFocus);
+    return () => input.removeEventListener('focus', handleFocus);
+  }, []);
 
   useEffect(() => {
-    if (selectedCountryName) { setInput(""); setShowSuggestions(false); }
+    if (selectedCountryName) { 
+      setInput(""); 
+      setShowSuggestions(false);
+      // Auto-focus input when country is selected
+      setTimeout(() => inputRef.current?.focus(), 100);
+    }
   }, [selectedCountryName]);
 
   const handleSubmit = (e?: React.FormEvent) => {
@@ -319,6 +343,7 @@ export function GameControls({
       <AnimatePresence>
         {selectedCountryName && (
           <motion.div
+            ref={panelRef}
             initial={{ y: 120, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 120, opacity: 0 }}
@@ -364,6 +389,7 @@ export function GameControls({
               <form onSubmit={handleSubmit} className="relative">
                 <div className="relative flex items-center">
                   <input
+                    ref={inputRef}
                     type="text"
                     value={input}
                     onChange={e => { setInput(e.target.value); setShowSuggestions(true); }}
