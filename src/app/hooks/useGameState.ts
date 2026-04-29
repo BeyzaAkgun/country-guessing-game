@@ -22,7 +22,9 @@ const getStorageKey = (mode?: string) => {
   return mode ? `gameState_${mode}` : "gameState";
 };
 
-export function useGameState(mode?: "classic" | "hint-based") {
+type GameStateMode = "classic" | "hint-based" | "capital-city";
+
+export function useGameState(mode?: GameStateMode) {
   const storageKey = getStorageKey(mode);
 
   // Initialize state from localStorage only once

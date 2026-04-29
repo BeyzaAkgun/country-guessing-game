@@ -225,7 +225,7 @@ export function CapitalCityGame({ onBackToMenu }: CapitalCityGameProps) {
   const [currentStreak, setCurrentStreak] = useState(0);
   const [bestStreak, setBestStreak] = useState(0);
 
-  const { state, setState, setTargetCountry: saveTargetCountry, resetState } = useGameState("hint-based");
+  const { state, setState, setTargetCountry: saveTargetCountry, resetState } = useGameState("capital-city");
   const { correctCountries, wrongCountries, score, targetCountry } = state;
   const [localTargetCountry, setLocalTargetCountry] = useState<string | null>(targetCountry || null);
 
