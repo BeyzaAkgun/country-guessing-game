@@ -548,7 +548,7 @@ export function SpeedRoundGame({ onBackToMenu }: SpeedRoundGameProps) {
                 initial={{ y: 100, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 100, opacity: 0 }}
                 transition={{ type: "spring", damping: 25, stiffness: 300 }}
                 className="absolute left-4 right-4 md:left-1/2 md:-translate-x-1/2 md:w-[460px] z-50"
-                style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 1.5rem)" }}
+                style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 4rem)" }}
               >
                 <GuessPanel selectedCountryName={selectedCountryName} allCountryNames={allCountryNames}
                   onGuess={handleGuess} onDismiss={() => setSelectedCountryName(null)} />
@@ -559,7 +559,7 @@ export function SpeedRoundGame({ onBackToMenu }: SpeedRoundGameProps) {
             {!selectedCountryName && (
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
                 className="absolute left-1/2 -translate-x-1/2 text-center pointer-events-none z-50"
-                style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 1rem)" }}>
+                style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 3rem)" }}>
                 <div className="bg-black/80 text-white px-5 py-2.5 rounded-full backdrop-blur-sm text-sm font-medium shadow-2xl">
                   👆 Tap any country to name it
                 </div>

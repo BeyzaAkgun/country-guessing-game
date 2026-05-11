@@ -438,7 +438,7 @@ const WorldMap = ({
       {/* Legend */}
       <div
         className="absolute left-3 z-50 flex gap-3 text-xs font-mono opacity-90 pointer-events-none bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-2xl px-3 py-2"
-        style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 0.75rem)" }}
+        style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 2rem)" }}
       >
         <div className="flex items-center gap-1.5">
           <div className={`w-2.5 h-2.5 rounded-full ${isDarkMode ? "bg-emerald-600" : "bg-emerald-500"}`} />

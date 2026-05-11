@@ -197,7 +197,7 @@ export default function App() {
   };
 
   return (
-    <div style={{ overflow: "hidden", width: "100vw", height: "100vh", position: "relative" }}>
+    <div style={{ overflow: "hidden", width: "100vw", height: "100dvh", position: "relative" }}>
       {renderContent()}
 
       {/* GLOBAL FAB — passes onShowAuth so guest can sign in from anywhere */}
