@@ -424,7 +424,8 @@ const WorldMap = ({
       {!isDefaultView && (
         <button
           onClick={() => setPosition({ coordinates: [0, 0], zoom: 1 })}
-          className="absolute bottom-16 right-3 z-20 flex items-center gap-1.5 px-3 py-2 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm text-slate-700 dark:text-slate-200 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 text-xs font-semibold transition-all active:scale-95 hover:bg-white dark:hover:bg-slate-700"
+          className="absolute right-3 z-50 flex items-center gap-1.5 px-3 py-2 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm text-slate-700 dark:text-slate-200 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 text-xs font-semibold transition-all active:scale-95 hover:bg-white dark:hover:bg-slate-700"
+          style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 4rem)" }}
           title="Reset map view"
         >
           <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -435,8 +436,10 @@ const WorldMap = ({
       )}
 
       {/* Legend */}
-      {/* <div className="absolute bottom-3 left-3 flex gap-3 text-xs font-mono opacity-70 pointer-events-none"> */}
-         <div className="absolute bottom-3 left-3 z-10 flex gap-3 text-xs font-mono opacity-70 pointer-events-none">
+      <div
+        className="absolute left-3 z-50 flex gap-3 text-xs font-mono opacity-90 pointer-events-none bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-2xl px-3 py-2"
+        style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 0.75rem)" }}
+      >
         <div className="flex items-center gap-1.5">
           <div className={`w-2.5 h-2.5 rounded-full ${isDarkMode ? "bg-emerald-600" : "bg-emerald-500"}`} />
           <span className={isDarkMode ? "text-slate-300" : "text-slate-600"}>Correct</span>

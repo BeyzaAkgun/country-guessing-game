@@ -1991,7 +1991,7 @@ export function MultiplayerGame({ onBackToMenu, user, initialMatchId }: Multipla
 
       {/* ── Submit + Leave — fixed to bottom, respects safe area ── */}
       <div
-        className="absolute bottom-0 left-0 right-0 z-20 px-2 sm:px-3 pb-2 sm:pb-3"
+        className="absolute bottom-0 left-0 right-0 z-50 px-2 sm:px-3 pb-2 sm:pb-3"
         style={{ paddingBottom: "max(env(safe-area-inset-bottom, 0px), 8px)" }}
       >
         <div className="flex items-end gap-2 max-w-sm">

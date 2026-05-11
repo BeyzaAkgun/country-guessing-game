@@ -264,7 +264,8 @@ export function ContinentStudyGame({ onBackToMenu }: ContinentStudyGameProps) {
             {selectedCountryName && (
               <motion.div initial={{ y: 100, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 100, opacity: 0 }}
                 transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                className="absolute bottom-4 sm:bottom-6 left-3 right-3 sm:left-1/2 sm:-translate-x-1/2 sm:w-[460px] z-40">
+                className="absolute left-3 right-3 sm:left-1/2 sm:-translate-x-1/2 sm:w-[460px] z-50"
+                style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 1.5rem)" }}>
                 <StudyGuessPanel selectedCountryName={selectedCountryName} allCountryNames={allCountryNames}
                   onGuess={handleGuess} onDismiss={() => setSelectedCountryName(null)} accentGradient={colors.bg} />
               </motion.div>
@@ -273,7 +274,8 @@ export function ContinentStudyGame({ onBackToMenu }: ContinentStudyGameProps) {
           <AnimatePresence>
             {!selectedCountryName && (
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
-                className="absolute bottom-6 sm:bottom-8 left-1/2 -translate-x-1/2 pointer-events-none z-10">
+                className="absolute left-1/2 -translate-x-1/2 pointer-events-none z-50"
+                style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 1rem)" }}>
                 <div className="bg-black/80 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-full backdrop-blur-sm text-xs sm:text-sm font-medium shadow-2xl whitespace-nowrap">
                   👆 Click a country in <span className="font-bold text-yellow-300">{selectedContinent}</span>
                 </div>
