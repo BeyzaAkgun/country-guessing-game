@@ -1,3 +1,4 @@
+/* index.css */
 @import './fonts.css';
 @import './tailwind.css';
 @import './theme.css';
@@ -51,4 +52,179 @@ html, body, #root {
 
 .pt-safe {
   padding-top: env(safe-area-inset-top, 0);
+}
+/* //newly added */
+/* @media (max-width: 768px) {
+  [data-sonner-toaster] {
+    left: 50% !important;
+    right: auto !important;
+    top: auto !important;
+    bottom: 12px !important;
+    transform: translateX(-50%) !important;
+    width: min(70vw, 420px) !important;
+  }
+}
+
+@media (min-width: 769px) {
+  [data-sonner-toaster] {
+    top: 16px !important;
+    right: 16px !important;
+    left: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+    width: auto !important;
+  }
+}
+
+.action-buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+@media (max-width: 768px) {
+  .action-buttons {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .pass-button,
+  .reveal-button {
+    width: 80%;
+    min-width: 200px;
+  }
+}
+
+.pass-button,
+.reveal-button {
+  padding: 12px 24px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 44px;
+  touch-action: manipulation;
+}
+
+.pass-button {
+  background-color: #ff9800;
+  color: white;
+}
+
+.reveal-button {
+  background-color: #f44336;
+  color: white;
+}
+
+.queue-status {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 16px;
+  font-size: 14px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  .queue-status {
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+  }
+} */
+
+/* newest(text input to submit) */
+
+.button-container {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.confirm-button {
+  flex: 2;
+  min-width: 120px;
+  min-height: 44px;
+  border: none;
+  border-radius: 12px;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.pass-button,
+.reveal-button {
+  flex: 1;
+  min-width: 80px;
+  min-height: 44px;
+}
+
+@media (max-width: 768px) {
+  .button-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .confirm-button {
+    width: 100%;
+    max-width: 280px;
+  }
+
+  .pass-button,
+  .reveal-button {
+    width: calc(50% - 6px);
+  }
+}
+
+@media (max-width: 480px) {
+  .pass-button,
+  .reveal-button {
+    width: 100%;
+  }
+}
+
+.confirm-button:active {
+  transform: scale(0.97);
+}
+
+.confirm-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.selected-country-display {
+  background: rgba(30, 41, 59, 0.9);
+  backdrop-filter: blur(8px);
+  border-radius: 16px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.selected-country-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  margin: 0;
+  word-break: break-word;
+}
+
+@media (max-width: 768px) {
+  .selected-country-display {
+    padding: 10px 12px;
+    margin-bottom: 12px;
+  }
+
+  .selected-country-text {
+    font-size: 14px;
+  }
 }

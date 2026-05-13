@@ -22,7 +22,10 @@ const getStorageKey = (mode?: string) => {
   return mode ? `gameState_${mode}` : "gameState";
 };
 
-type GameStateMode = "classic" | "hint-based" | "capital-city";
+// type GameStateMode = "classic" | "hint-based" | "capital-city" ;
+type GameStateMode = "classic" | "hint-based" | "capital-city" | "flag-quiz";
+
+
 
 export function useGameState(mode?: GameStateMode) {
   const storageKey = getStorageKey(mode);
