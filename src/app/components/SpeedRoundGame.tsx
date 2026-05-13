@@ -601,17 +601,11 @@ function GuessPanel({ selectedCountryName, allCountryNames, onGuess, onDismiss }
   const [showSuggestions, setShowSuggestions] = React.useState(false);
   const inputRef = React.useRef<HTMLInputElement>(null);
 
-  // React.useEffect(() => {
-  //   setInput("");
-  //   setShowSuggestions(false);
-  //   setTimeout(() => inputRef.current?.focus(), 80);
-  // }, [selectedCountryName]);
-
   React.useEffect(() => {
-  setInput("");
-  setShowSuggestions(false);
-  setTimeout(() => inputRef.current?.focus({ preventScroll: true }), 80);
-}, [selectedCountryName]);
+    setInput("");
+    setShowSuggestions(false);
+    setTimeout(() => inputRef.current?.focus(), 80);
+  }, [selectedCountryName]);
 
   const filtered = React.useMemo(() => {
     if (!input) return [];
@@ -655,7 +649,7 @@ function GuessPanel({ selectedCountryName, allCountryNames, onGuess, onDismiss }
 
       <div className="relative">
         <div className="relative flex items-center">
-          {/* <input
+          <input
             ref={inputRef}
             type="text"
             value={input}
@@ -668,26 +662,7 @@ function GuessPanel({ selectedCountryName, allCountryNames, onGuess, onDismiss }
             placeholder="Type country name..."
             className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-2xl py-3.5 pl-4 pr-12 text-base focus:ring-2 focus:ring-yellow-400/60 outline-none transition-all"
             autoFocus
-          /> */}
-          <input
-  ref={inputRef}
-  type="text"
-  value={input}
-  onChange={(e) => {
-    setInput(e.target.value);
-    setShowSuggestions(true);
-  }}
-  onFocus={() => setShowSuggestions(true)}
-  onKeyDown={(e) => e.key === "Enter" && submit()}
-  placeholder="Type country name..."
-  className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-2xl py-3.5 pl-4 pr-12 text-base focus:ring-2 focus:ring-yellow-400/60 outline-none transition-all"
-  autoComplete="off"
-  autoCorrect="off"
-  autoCapitalize="none"
-  spellCheck={false}
-  enterKeyHint="done"
-  inputMode="text"
-/>
+          />
           <button
             onClick={() => submit()}
             className="absolute right-2 p-2 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white rounded-xl transition-all active:scale-95"

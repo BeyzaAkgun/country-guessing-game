@@ -1237,10 +1237,9 @@ export function GameControls({
               </div>
 
               {/* Input Form */}
-              {/* <form onSubmit={handleSubmit} className="relative"> */}
-              <form onSubmit={handleSubmit} className="relative"autoComplete="off"> 
+              <form onSubmit={handleSubmit} className="relative">
                 <div className="relative flex items-center">
-                  {/* <input
+                  <input
                     ref={inputRef}
                     type="text"
                     value={input}
@@ -1264,34 +1263,7 @@ export function GameControls({
                     autoCorrect="off"
                     autoCapitalize="none"
                     spellCheck={false}
-                  /> */}
-                  <input
-  ref={inputRef}
-  type="text"
-  value={input}
-  onChange={(e) => {
-    setInput(e.target.value);
-    setShowSuggestions(true);
-  }}
-  onFocus={(e) => {
-    setShowSuggestions(true);
-    setTimeout(() => {
-      e.currentTarget.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-      });
-    }, 300);
-  }}
-  onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-  placeholder="Type country name..."
-  className="w-full bg-slate-800/80 border border-white/10 rounded-full py-3 pl-4 pr-14 text-sm text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500/50 outline-none"
-  autoComplete="off"
-  autoCorrect="off"
-  autoCapitalize="none"
-  spellCheck={false}
-  enterKeyHint="done"
-  inputMode="text"
-/>
+                  />
 
                   <button
                     type="submit"
