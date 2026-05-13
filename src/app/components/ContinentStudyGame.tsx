@@ -314,7 +314,13 @@ function StudyGuessPanel({ selectedCountryName, allCountryNames, onGuess, onDism
   const [input, setInput] = React.useState("");
   const [showSuggestions, setShowSuggestions] = React.useState(false);
   const inputRef = React.useRef<HTMLInputElement>(null);
-  React.useEffect(() => { setInput(""); setShowSuggestions(false); setTimeout(() => inputRef.current?.focus(), 80); }, [selectedCountryName]);
+  // React.useEffect(() => { setInput(""); setShowSuggestions(false); setTimeout(() => inputRef.current?.focus(), 80); }, [selectedCountryName]);
+  React.useEffect(() => {
+  setInput("");
+  setShowSuggestions(false);
+  setTimeout(() => inputRef.current?.focus({ preventScroll: true }), 80);
+}, [selectedCountryName]);
+
 
   const filtered = React.useMemo(() => {
     if (!input) return [];
@@ -332,14 +338,34 @@ function StudyGuessPanel({ selectedCountryName, allCountryNames, onGuess, onDism
       </div>
       <div className="relative">
         <div className="relative flex items-center">
-          <input ref={inputRef} type="text" value={input}
+          {/* <input ref={inputRef} type="text" value={input}
             onChange={e => { setInput(e.target.value); setShowSuggestions(true); }}
             onFocus={() => setShowSuggestions(true)}
             onKeyDown={e => e.key === "Enter" && submit()}
             placeholder="Type country name…"
             className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl py-3 pl-4 pr-12 text-base focus:ring-2 focus:ring-blue-400/50 outline-none"
             autoFocus
-          />
+          /> */}
+
+          <input
+  ref={inputRef}
+  type="text"
+  value={input}
+  onChange={(e) => {
+    setInput(e.target.value);
+    setShowSuggestions(true);
+  }}
+  onFocus={() => setShowSuggestions(true)}
+  onKeyDown={(e) => e.key === "Enter" && submit()}
+  placeholder="Type country name..."
+  className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl py-3 pl-4 pr-12 text-base focus:ring-2 focus:ring-blue-400/50 outline-none"
+  autoComplete="off"
+  autoCorrect="off"
+  autoCapitalize="none"
+  spellCheck={false}
+  enterKeyHint="done"
+  inputMode="text"
+/>
           <button onClick={() => submit()}
             className={`absolute right-2 p-2 bg-gradient-to-r ${accentGradient} text-white rounded-xl transition-all active:scale-95`}>
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
