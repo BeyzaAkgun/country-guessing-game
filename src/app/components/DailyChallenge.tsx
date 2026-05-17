@@ -718,5 +718,6 @@ function DailyGuessPanel({ selectedCountryName, allCountryNames, onGuess, onDism
         )}
       </div>
     </div>
-  );
+  )
 }
+
