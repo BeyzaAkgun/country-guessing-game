@@ -1,4 +1,4 @@
-// //client.ts
+// //country-guessing-game-main/src/api/client.ts
 // const BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000/api/v1";
 // const WS_BASE  = import.meta.env.VITE_WS_URL ?? "ws://localhost:8000/ws";
 
@@ -232,7 +232,7 @@
 // }
 
 
-
+//country-guessing-game-main/src/api/client.ts
 const BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000/api/v1";
 const WS_BASE  = import.meta.env.VITE_WS_URL ?? "ws://localhost:8000/ws";
 
@@ -436,10 +436,17 @@ export const matchmaking = {
     request<MatchStatusResponse>(`/matchmaking/match/${matchId}/status`),
 
   forfeitMatch: (matchId: string) =>
-    request<any>(
+    request<{ status: string; xp_earned: number; rank_points_delta: number; match_result?: MatchResultPayload }>(
       `/matchmaking/match/${matchId}/forfeit`,
       { method: "POST" }
     ),
+
+  checkPendingForfeit: () =>
+    request<{
+      has_pending: boolean;
+      match_id?: string;
+      result?: MatchResultPayload;
+    }>("/matchmaking/forfeit/pending"),
 };
 
 export const leaderboard = {
