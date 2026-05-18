@@ -2098,6 +2098,10 @@
 // }
 
 
+
+
+//MOBILE FIXES
+
 //country-guessing-game-main/app/components/MultiplayerGame.tsx
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
@@ -2992,8 +2996,11 @@ export function MultiplayerGame({ onBackToMenu, user, initialMatchId }: Multipla
 
       {/* ── Submit + Leave — fixed to bottom, respects safe area ── */}
       <div
-        className="absolute left-0 right-0 z-50 px-2 sm:px-3 pb-2 sm:pb-3"
-        style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 0.75rem)", paddingBottom: "max(env(safe-area-inset-bottom, 0px), 8px)" }}
+        className="absolute left-0 right-0 z-50 px-2 sm:px-3"
+        style={{
+          bottom: 0,
+          paddingBottom: "max(env(safe-area-inset-bottom, 0px) + 80px, 88px)",
+        }}
       >
         <div className="flex items-end gap-2 max-w-sm">
           {/* Leave button */}
@@ -3009,8 +3016,8 @@ export function MultiplayerGame({ onBackToMenu, user, initialMatchId }: Multipla
             <span className="hidden sm:inline">Leave</span>
           </button>
 
-          {/* Submit panel */}
-          <div className="flex-1 bg-slate-900/92 backdrop-blur-md rounded-xl sm:rounded-2xl border border-slate-700/50 shadow-xl p-2.5 sm:p-3">
+          {/* Submit panel — compact spacing */}
+          <div className="flex-1 bg-slate-900/92 backdrop-blur-md rounded-xl sm:rounded-2xl border border-slate-700/50 shadow-xl p-2 sm:p-3">
             <AnimatePresence mode="wait">
               {lastResult && lastResult.correct ? (
                 <motion.div key="result-correct" initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
@@ -3021,11 +3028,11 @@ export function MultiplayerGame({ onBackToMenu, user, initialMatchId }: Multipla
                 </motion.div>
               ) : (
                 <motion.div key="submit" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                  <p className="text-[10px] text-slate-400 font-semibold mb-1.5 text-center truncate">
+                  <p className="text-[10px] text-slate-400 font-semibold mb-1 text-center truncate">
                     {selectedCountryName ? selectedCountryName : "Tap a country on the map"}
                   </p>
                   {selectedCountryName && expectedPoints !== null && (
-                    <p className="text-[10px] text-yellow-400 text-center mb-1.5">
+                    <p className="text-[10px] text-yellow-400 text-center mb-1">
                       ~{expectedPoints}pts · {hintsUsed} hint{hintsUsed !== 1 ? "s" : ""}
                     </p>
                   )}
