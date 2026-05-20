@@ -478,14 +478,14 @@ import {
 } from "react-simple-maps";
 import { motion } from "motion/react";
 
-
 interface WorldMapProps {
   countries: any[];
   onCountryClick: (geo: any) => void;
   selectedCountryName?: string | null;
   correctCountries: string[];
   wrongCountries: string[];
-  bottomOffset?: string; // extra bottom clearance for overlaid UI
+  bottomOffset?: string;
+  hideLegend?: boolean; // new prop to optionally hide the legend
 }
 
 const WorldMap = ({
@@ -495,6 +495,7 @@ const WorldMap = ({
   correctCountries = [],
   wrongCountries = [],
   bottomOffset = "2rem",
+  hideLegend = false,
 }: WorldMapProps) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   // Track zoom/center so we can offer a "reset view" button when user has panned far
@@ -527,8 +528,6 @@ const WorldMap = ({
   return (
     <div
       className={`w-full h-full relative overflow-hidden flex items-center justify-center select-none transition-colors duration-500 ${isDarkMode ? "bg-slate-950" : "bg-blue-50"}`}
-      // touch-action: none prevents the browser from hijacking touch events for
-      // page scroll / pinch-zoom while the user is interacting with the map.
       style={{ touchAction: "none" }}
     >
       {/* Dark mode decorative background */}
@@ -671,30 +670,32 @@ const WorldMap = ({
           title="Reset map view"
         >
           <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 2v4m0 12v4M2 12h4m12 0h4m-4.93-6.07l-2.83 2.83M6.76 17.24l-2.83 2.83M17.24 17.24l2.83 2.83M6.76 6.76L3.93 3.93" />
-         </svg>
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 2v4m0 12v4M2 12h4m12 0h4m-4.93-6.07l-2.83 2.83M6.76 17.24l-2.83 2.83M17.24 17.24l2.83 2.83M6.76 6.76L3.93 3.93" />
+          </svg>
           <span className="hidden sm:inline">Reset View</span>
         </button>
       )}
 
-      {/* Legend */}
-      <div
-        className="absolute left-3 z-50 flex gap-3 text-xs font-mono opacity-90 pointer-events-none bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-2xl px-3 py-2"
-        style={{ bottom: `calc(env(safe-area-inset-bottom, 0px) + ${bottomOffset})` }}
-      >
-        <div className="flex items-center gap-1.5">
-          <div className={`w-2.5 h-2.5 rounded-full ${isDarkMode ? "bg-emerald-600" : "bg-emerald-500"}`} />
-          <span className={isDarkMode ? "text-slate-300" : "text-slate-600"}>Correct</span>
+      {/* Legend — hidden in contexts where it would overlap game UI */}
+      {!hideLegend && (
+        <div
+          className="absolute left-3 z-50 flex gap-3 text-xs font-mono opacity-90 pointer-events-none bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-2xl px-3 py-2"
+          style={{ bottom: `calc(env(safe-area-inset-bottom, 0px) + ${bottomOffset})` }}
+        >
+          <div className="flex items-center gap-1.5">
+            <div className={`w-2.5 h-2.5 rounded-full ${isDarkMode ? "bg-emerald-600" : "bg-emerald-500"}`} />
+            <span className={isDarkMode ? "text-slate-300" : "text-slate-600"}>Correct</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <div className={`w-2.5 h-2.5 rounded-full ${isDarkMode ? "bg-rose-700" : "bg-rose-500"}`} />
+            <span className={isDarkMode ? "text-slate-300" : "text-slate-600"}>Wrong</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <div className={`w-2.5 h-2.5 rounded-full ${isDarkMode ? "bg-blue-600" : "bg-blue-500"}`} />
+            <span className={isDarkMode ? "text-slate-300" : "text-slate-600"}>Selected</span>
+          </div>
         </div>
-        <div className="flex items-center gap-1.5">
-          <div className={`w-2.5 h-2.5 rounded-full ${isDarkMode ? "bg-rose-700" : "bg-rose-500"}`} />
-          <span className={isDarkMode ? "text-slate-300" : "text-slate-600"}>Wrong</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <div className={`w-2.5 h-2.5 rounded-full ${isDarkMode ? "bg-blue-600" : "bg-blue-500"}`} />
-          <span className={isDarkMode ? "text-slate-300" : "text-slate-600"}>Selected</span>
-        </div>
-      </div>
+      )}
     </div>
   );
 };

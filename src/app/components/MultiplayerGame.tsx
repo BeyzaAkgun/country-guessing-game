@@ -3109,6 +3109,7 @@
 
 
 //country-guessing-game-main/app/components/MultiplayerGame.tsx
+//country-guessing-game-main/app/components/MultiplayerGame.tsx
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
@@ -3901,6 +3902,7 @@ export function MultiplayerGame({ onBackToMenu, user, initialMatchId }: Multipla
             correctCountries={correctCountries}
             wrongCountries={wrongCountries}
             bottomOffset="9rem"
+            hideLegend={true}
           />
         </div>
       )}
