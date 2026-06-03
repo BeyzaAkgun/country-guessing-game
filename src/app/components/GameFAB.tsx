@@ -294,7 +294,9 @@
 // }
 
 
-//HATA OLURSA YUKARIDAKİ KODA DON.
+//HATA OLURSA YUKARIDAKİ KODA DON.Last version. Yaptığım değişiklikler:
+//1.FAB butonunun konumunu oyun içindeyken biraz daha yukarı aldım,çünkü oyun içindeyken ekranın,altında kalan kısımda bazı önemli bilgiler oluyor ve kullanıcılar erişemiyor
+//...
 // GameFAB.tsx - Universal floating action button, always on screen everywhere
 import React, { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";

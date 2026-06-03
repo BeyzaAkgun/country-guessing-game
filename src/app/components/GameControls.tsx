@@ -1776,6 +1776,8 @@
 // }
 
 
+//Hata olursa yukarıdaki kodu kullanabilirsin,ufak bir düzenleme yaptım.Yukarıdaki kodda,"Selected Country Display" kısmında,seçilen ülkenin adını gösterirken,ben "Name this country" yazmasını sağladım.
+//Çünkü zaten üstünde pin ikonu var ve kullanıcıya ülke adını yazdırmak istediğimiz için bu şekilde daha açıklayıcı olur diye düşündüm.
 // GameControls.tsx - Per-game top bar. TV + Profile handled by root GameFAB.
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";

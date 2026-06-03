@@ -699,8 +699,8 @@
 //   );
 // }
 
-//ABOVE CODE CAN HAVE ERROR.BELOW IS SAFER
 
+//ABOVE CODE CAN HAVE ERROR.This is safer.
 //SpeedRoundGame.tsx codes
 // SpeedRoundGame.tsx - Speed Round Mode: Find as many countries as possible before time runs out
 import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";

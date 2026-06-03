@@ -1,3 +1,4 @@
+/* theme.css */
 @custom-variant dark (&:is(.dark *));
 
 :root {

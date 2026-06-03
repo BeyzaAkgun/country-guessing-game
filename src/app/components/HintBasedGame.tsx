@@ -1231,6 +1231,7 @@
 
 
 //newest(text input to click and submit)
+//Ülke adını yazmayı submit ile değiştridim.
 
 // HintBasedGame.tsx - Complete with Sound, Stats, Achievements, TV Mode, and Queue System
 // HintBasedGame.tsx - Complete with Sound, Stats, Achievements, TV Mode, and Queue System
