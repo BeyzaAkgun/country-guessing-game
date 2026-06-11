@@ -1144,7 +1144,8 @@ const WorldMap = ({
         <button
           onClick={() => setPosition({ coordinates: [0, 0], zoom: 1 })}
           className="absolute right-3 z-50 flex items-center gap-1.5 px-3 py-2 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm text-slate-700 dark:text-slate-200 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 text-xs font-semibold transition-all active:scale-95 hover:bg-white dark:hover:bg-slate-700"
-          style={{ bottom: `calc(env(safe-area-inset-bottom, 0px) + ${bottomOffset} + 2rem)` }}
+          // style={{ bottom: `calc(env(safe-area-inset-bottom, 0px) + ${bottomOffset} + 2rem)` }}
+          style={{ bottom: `calc(env(safe-area-inset-bottom, 0px) + ${bottomOffset} + 5rem)` }}
           title="Reset map view"
         >
           <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
