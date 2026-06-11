@@ -4012,7 +4012,6 @@ export function MultiplayerGame({ onBackToMenu, user, initialMatchId }: Multipla
           paddingBottom: "max(env(safe-area-inset-bottom, 0px) + 80px, 88px)",
         }}
       >
-        {/* <div className="flex items-end gap-2 max-w-sm"> */}
         <div className="flex items-end gap-2 w-full max-w-sm mx-auto">
           {/* Leave button */}
           <button
