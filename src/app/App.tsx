@@ -168,11 +168,22 @@ export default function App() {
             <SpeedRoundGame onBackToMenu={handleBackToMenu} />
           </GameTransition>
         )}
-        {gameMode === "daily-challenge" && (
+        {/* {gameMode === "daily-challenge" && (
           <GameTransition id="daily-challenge">
             <DailyChallenge onBackToMenu={handleBackToMenu} />
           </GameTransition>
+        )} */}
+        {/* //changed daily mode */}
+                {gameMode === "daily-challenge" && (
+          <GameTransition id="daily-challenge">
+            <DailyChallenge
+              onBackToMenu={handleBackToMenu}
+              user={user}
+              onShowAuth={() => setViewMode("auth")}
+            />
+          </GameTransition>
         )}
+        
         {gameMode === "continent-study" && (
           <GameTransition id="continent-study">
             <ContinentStudyGame onBackToMenu={handleBackToMenu} />
