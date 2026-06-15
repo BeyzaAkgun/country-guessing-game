@@ -3258,6 +3258,7 @@ export function MultiplayerGame({ onBackToMenu, user, initialMatchId }: Multipla
       setStoredMatchCheck({ loading: true, status: null, result: null });
       try {
         const status = await matchmaking.getMatchStatus(mid);
+        console.log("Match status response:", JSON.stringify(status));
         if (cancelled) return;
         if (status.status === "finished") {
           clearActiveMatch();
@@ -3626,6 +3627,7 @@ export function MultiplayerGame({ onBackToMenu, user, initialMatchId }: Multipla
     if (!mid) return;
     try {
       const status = await matchmaking.getMatchStatus(mid);
+      console.log("Match status response:", JSON.stringify(status));
       if (status.status === "finished") {
         clearActiveMatch();
         setStoredMatchCheck({ loading: false, status: null, result: null });
@@ -4017,7 +4019,7 @@ export function MultiplayerGame({ onBackToMenu, user, initialMatchId }: Multipla
           <button
             onClick={() => {
               if (window.confirm("Leave match? You will forfeit.\n\nYou can reconnect within 15 seconds.")) {
-                clearActiveMatch(); cleanup(); onBackToMenu();
+                // clearActiveMatch(); cleanup(); onBackToMenu();
               }
             }}
             className="flex-shrink-0 flex items-center gap-1 px-2.5 py-2 bg-slate-900/80 hover:bg-slate-800 text-slate-400 hover:text-slate-200 rounded-xl text-xs font-semibold transition-all border border-slate-700/50 min-h-[44px]"
