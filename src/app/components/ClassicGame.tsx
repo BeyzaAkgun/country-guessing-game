@@ -18,6 +18,7 @@ import { useGameState } from "@/app/hooks/useGameState";
 import { getRandomHint, getRemainingHintCount } from "@/app/utils/getRandomHint";
 import { soundEffects } from "@/app/utils/soundEffects";
 import { addXP, calculateXPReward } from "@/app/utils/xpSystem";
+import { getStoredUser } from "@/api/client";
 
 interface ClassicGameProps {
   onBackToMenu: () => void;
@@ -101,7 +102,8 @@ export default function ClassicGame({ onBackToMenu }: ClassicGameProps) {
       clearHints();
       setFactCardCountry(localSelectedCountry);
       const { xp, breakdown } = calculateXPReward({ mode: "classic", streak: newStreak, usedHints: hintsUsedForCurrentCountry > 0 });
-      addXP(xp);
+      const user = getStoredUser();
+      addXP(xp, user?.id);
       setXpToast({ xp, breakdown });
       setXpVersion(v => v + 1);
       setLocalSelectedCountry(null);

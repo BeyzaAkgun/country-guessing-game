@@ -69,19 +69,23 @@ export function calculateXPReward(config: XPRewardConfig): { xp: number; breakdo
 
 const STORAGE_KEY = "geogame_totalXP";
 
-export function loadTotalXP(): number {
-  try { return parseInt(localStorage.getItem(STORAGE_KEY) || "0", 10) || 0; } catch { return 0; }
+function getScopedKey(userId?: string | null): string {
+  return userId ? `geogame_totalXP_${userId}` : STORAGE_KEY;
 }
 
-export function saveTotalXP(xp: number): void {
-  try { localStorage.setItem(STORAGE_KEY, String(xp)); } catch {}
+export function loadTotalXP(userId?: string | null): number {
+  try { return parseInt(localStorage.getItem(getScopedKey(userId)) || "0", 10) || 0; } catch { return 0; }
 }
 
-export function addXP(amount: number): { newTotal: number; newState: XPState; didLevelUp: boolean; newLevel: number } {
-  const oldTotal = loadTotalXP();
+export function saveTotalXP(xp: number, userId?: string | null): void {
+  try { localStorage.setItem(getScopedKey(userId), String(xp)); } catch {}
+}
+
+export function addXP(amount: number, userId?: string | null): { newTotal: number; newState: XPState; didLevelUp: boolean; newLevel: number } {
+  const oldTotal = loadTotalXP(userId);
   const oldLevel = getLevelFromXP(oldTotal);
   const newTotal = oldTotal + amount;
-  saveTotalXP(newTotal);
+  saveTotalXP(newTotal, userId);
   const newLevel = getLevelFromXP(newTotal);
   return { newTotal, newState: getXPState(newTotal), didLevelUp: newLevel > oldLevel, newLevel };
 }

@@ -332,7 +332,7 @@ export function GameFAB({ onTVModeChange, onLogout, onShowAuth, user, inGame = f
 
   // Guests never see XP/level data — use a zero state so nothing leaks through
   const isGuest = !user;
-  const xpState = isGuest ? getXPState(0) : getXPState(loadTotalXP());
+  const xpState = isGuest ? getXPState(0) : getXPState(loadTotalXP(user?.id));
   const levelPct = isGuest
     ? 0
     : xpState.xpForNextLevel > 0

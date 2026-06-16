@@ -374,6 +374,7 @@ import { toast, Toaster } from "sonner";
 import { Loader2, BookOpen, Globe, RotateCcw, Home, ChevronRight, CheckCircle2 } from "lucide-react";
 import { soundEffects } from "@/app/utils/soundEffects";
 import { addXP, calculateXPReward } from "@/app/utils/xpSystem";
+import { getStoredUser } from "@/api/client";
 
 interface ContinentStudyGameProps {
   onBackToMenu: () => void;
@@ -474,7 +475,8 @@ export function ContinentStudyGame({ onBackToMenu }: ContinentStudyGameProps) {
     saveStudied(selectedContinent, newCorrect);
     setFactCardCountry(selectedCountryName);
     const { xp, breakdown } = calculateXPReward({ mode: "continent-study", streak: newStreak, usedHints: false });
-    addXP(xp);
+    const user = getStoredUser();
+    addXP(xp, user?.id);
     setXpToast({ xp, breakdown });
     setXpVersion(v => v + 1);
     setSelectedCountryName(null);

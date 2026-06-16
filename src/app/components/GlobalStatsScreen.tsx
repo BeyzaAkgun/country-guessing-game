@@ -518,7 +518,7 @@ interface GlobalStatsScreenProps {
 
 export function GlobalStatsScreen({ isOpen, onClose }: GlobalStatsScreenProps) {
   const storedUser = useMemo(() => getStoredUser(), [isOpen]);
-  const xpState = useMemo(() => getXPState(loadTotalXP()), [isOpen]);
+  const xpState = useMemo(() => getXPState(loadTotalXP(storedUser?.id)), [isOpen, storedUser?.id]);
   const daily_result = useMemo(() => loadDailyResult(), [isOpen]);
   const continentProgress = useMemo(() => loadContinentProgress(), [isOpen]);
   const classicStats = useMemo(() => loadClassicStats(), [isOpen]);
