@@ -3236,7 +3236,7 @@ export function MultiplayerGame({ onBackToMenu, user, initialMatchId }: Multipla
               const alreadyAwarded = sessionStorage.getItem("mp_xp_awarded_match") === forfeit.match_id;
               if (!alreadyAwarded) {
                 sessionStorage.setItem("mp_xp_awarded_match", forfeit.match_id);
-                addXP(me.xp_earned);
+                addXP(me.xp_earned, user?.id);
                 window.dispatchEvent(new Event("xp-updated"));
               }
             }
@@ -3476,7 +3476,7 @@ export function MultiplayerGame({ onBackToMenu, user, initialMatchId }: Multipla
             if (me?.xp_earned > 0 && currentMatchId && !alreadyAwarded) {
               xpAwardedRef.current = currentMatchId;
               sessionStorage.setItem("mp_xp_awarded_match", currentMatchId);
-              addXP(me.xp_earned);
+              addXP(me.xp_earned, user?.id);
               window.dispatchEvent(new Event("xp-updated"));
             }
           }
@@ -3669,14 +3669,14 @@ export function MultiplayerGame({ onBackToMenu, user, initialMatchId }: Multipla
           if (result.xp_earned > 0 && !alreadyAwarded) {
             xpAwardedRef.current = mid;
             sessionStorage.setItem("mp_xp_awarded_match", mid);
-            addXP(result.xp_earned);
+            addXP(result.xp_earned, user?.id);
             window.dispatchEvent(new Event("xp-updated"));
           }
           return;
         }
         // Fallback: award XP and go to menu
         if (result?.xp_earned > 0) {
-          addXP(result.xp_earned);
+          addXP(result.xp_earned, user?.id);
           window.dispatchEvent(new Event("xp-updated"));
         }
       } catch (e: any) {
