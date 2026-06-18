@@ -2142,6 +2142,7 @@
 //   3. Post-game registration prompt works correctly (was already correct, but
 //      now user prop is guaranteed to arrive from App.tsx)
 
+//DailyChallenge.tsx - Daily 10-country challenge, same for everyone each day
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import WorldMap from "@/app/components/WorldMap";
@@ -2160,6 +2161,7 @@ import {
   type DailyCompleteResponse,
   type DailyLeaderboardEntry,
 } from "@/api/client";
+import posthog from "posthog-js";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface DailyChallengeProps {
@@ -2418,6 +2420,7 @@ export function DailyChallenge({ onBackToMenu, user, onShowAuth }: DailyChalleng
 
   // ── Actions ───────────────────────────────────────────────────────────────
   const startChallenge = () => {
+    posthog.capture("game_start", { mode: "daily-challenge" });
     setPhase("playing");
     setTimerActive(true);
     setCurrentIndex(0);
@@ -2456,6 +2459,8 @@ export function DailyChallenge({ onBackToMenu, user, onShowAuth }: DailyChalleng
         saveResult(finalResult, userId);
         setSavedResult(finalResult);
         soundEffects.playAchievement();
+        posthog.capture("game_end", { mode: "daily-challenge", score: newScore, total_time: elapsedSeconds });
+
 
         // ── Guest path ────────────────────────────────────────────────────
         if (!user) {

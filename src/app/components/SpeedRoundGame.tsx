@@ -713,6 +713,7 @@ import { ClassroomHUD } from "@/app/components/ClassroomHUD";
 import { toast, Toaster } from "sonner";
 import { Loader2, Timer, Trophy, Zap, RotateCcw, Home, Star } from "lucide-react";
 import { soundEffects } from "@/app/utils/soundEffects";
+import posthog from "posthog-js";
 
 interface SpeedRoundGameProps {
   onBackToMenu: () => void;
@@ -804,6 +805,7 @@ export function SpeedRoundGame({ onBackToMenu }: SpeedRoundGameProps) {
   }, [phase]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const endGame = useCallback(() => {
+    posthog.capture("game_end", { mode: "speed-round", duration: selectedDuration, score });
     setPhase("finished");
     setSelectedCountryName(null);
     setScore((s) => {
@@ -823,6 +825,7 @@ export function SpeedRoundGame({ onBackToMenu }: SpeedRoundGameProps) {
 
   // ── Actions ───────────────────────────────────────────────────────────────
   const startGame = () => {
+    posthog.capture("game_start", { mode: "speed-round", duration: selectedDuration });
     setCorrectCountries([]);
     setWrongCountries([]);
     setSelectedCountryName(null);

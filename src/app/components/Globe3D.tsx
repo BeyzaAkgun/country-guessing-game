@@ -381,6 +381,7 @@ import React, { useRef, useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { Maximize2, Map } from "lucide-react";
 import * as THREE from "three";
+import posthog from "posthog-js";
 
 interface Globe3DProps {
   onTransitionToMap: () => void;
@@ -689,7 +690,10 @@ export function Globe3D({ onTransitionToMap, showButton = true }: Globe3DProps) 
     <div 
       className="relative w-screen bg-gradient-to-b from-black via-slate-900 to-slate-800 overflow-hidden" 
       style={{ height: '100dvh' }}
-      onDoubleClick={onTransitionToMap}
+      onDoubleClick={()=>{
+        posthog.capture("click_play", {source: "double_click_globe"});
+        onTransitionToMap();
+      }}
     >
       <canvas 
         ref={canvasRef} 
@@ -727,7 +731,10 @@ export function Globe3D({ onTransitionToMap, showButton = true }: Globe3DProps) 
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 1 }}
-              onClick={onTransitionToMap}
+              onClick={() => {
+              posthog.capture("click_play", {source: "button"});
+              onTransitionToMap();
+              }}
               className="px-6 sm:px-8 py-3.5 sm:py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-2xl font-bold text-base sm:text-lg shadow-2xl flex items-center gap-2 sm:gap-3 transition-all hover:scale-105 active:scale-95"
             >
               <Map className="w-6 h-6" />

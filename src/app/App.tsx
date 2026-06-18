@@ -14,6 +14,7 @@ import { AuthScreen } from "@/app/components/AuthScreen";
 import { MultiplayerGame } from "@/app/components/MultiplayerGame";
 import ClassicGame from "@/app/components/ClassicGame";
 import { useAuth } from "@/app/hooks/useAuth";
+import posthog from "posthog-js";
 
 type GameMode =
   | "classic"
@@ -58,6 +59,10 @@ export default function App() {
     document.body.style.overflow = "hidden";
     return () => { document.body.style.overflow = ""; };
   }, []);
+
+  useEffect(() => {
+  posthog.capture("landing_view");
+}, []);
 
   // Stored match id (if any) is passed to MultiplayerGame so its lobby can show reconnect UI
   const pendingMatchId = sessionStorage.getItem(SESSION_MATCH_KEY);
@@ -130,6 +135,7 @@ export default function App() {
           >
             <GameModeSelector
               onSelectMode={(mode) => {
+                posthog.capture("select_mode", { mode });
                 // Multiplayer requires auth — redirect to auth screen
                 if (mode === "multiplayer" && authState !== "authenticated") {
                   setViewMode("auth");

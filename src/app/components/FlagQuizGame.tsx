@@ -1520,6 +1520,7 @@ import {
   toQueueCountry,
   type PassQueueState,
 } from "@/app/utils/queueSystem";
+import posthog from "posthog-js";
 
 
 
@@ -1906,6 +1907,10 @@ export function FlagQuizGame({ onBackToMenu }: FlagQuizGameProps) {
     }
     setAchievements(updatedAchievements);
   };
+
+  useEffect(() => {
+  posthog.capture("game_start", { mode: "flag-quiz" });
+}, []);
 
   // Initialization effect
   useEffect(() => {

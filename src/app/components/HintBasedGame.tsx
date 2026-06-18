@@ -1263,6 +1263,7 @@ import {
   toQueueCountry,
   type PassQueueState,
 } from "@/app/utils/queueSystem";
+import posthog from "posthog-js";
 
 interface HintBasedGameProps {
   onBackToMenu: () => void;
@@ -1480,6 +1481,10 @@ export function HintBasedGame({ onBackToMenu }: HintBasedGameProps) {
     
     setAchievements(updatedAchievements);
   };
+
+  useEffect(() => {
+  posthog.capture("game_start", { mode: "hint-based" });
+}, []);
 
   // Initialization effects
   useEffect(() => {

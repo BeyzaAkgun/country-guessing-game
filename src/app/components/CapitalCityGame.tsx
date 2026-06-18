@@ -664,6 +664,7 @@ import {
   toQueueCountry,
   type PassQueueState,
 } from "@/app/utils/queueSystem";
+import posthog from "posthog-js";
 
 interface CapitalCityGameProps {
   onBackToMenu: () => void;
@@ -990,6 +991,10 @@ export function CapitalCityGame({ onBackToMenu }: CapitalCityGameProps) {
     }
     setAchievements(updatedAchievements);
   };
+
+  useEffect(() => {
+  posthog.capture("game_start", { mode: "capital-city" });
+}, []);
 
   // Initialization effect
   useEffect(() => {

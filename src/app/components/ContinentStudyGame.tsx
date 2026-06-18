@@ -375,6 +375,7 @@ import { Loader2, BookOpen, Globe, RotateCcw, Home, ChevronRight, CheckCircle2 }
 import { soundEffects } from "@/app/utils/soundEffects";
 import { addXP, calculateXPReward } from "@/app/utils/xpSystem";
 import { getStoredUser } from "@/api/client";
+import posthog from "posthog-js";
 
 interface ContinentStudyGameProps {
   onBackToMenu: () => void;
@@ -444,6 +445,7 @@ export function ContinentStudyGame({ onBackToMenu }: ContinentStudyGameProps) {
   const remaining = useMemo(() => continentPool.filter(n => !correctCountries.includes(n)), [continentPool, correctCountries]);
 
   const handleStartContinent = (continent: string) => {
+    posthog.capture("game_start", { mode: "continent-study", continent });
     setSelectedContinent(continent);
     setWrongCountries([]);
     setSelectedCountryName(null);
@@ -480,7 +482,11 @@ export function ContinentStudyGame({ onBackToMenu }: ContinentStudyGameProps) {
     setXpToast({ xp, breakdown });
     setXpVersion(v => v + 1);
     setSelectedCountryName(null);
-    if (newCorrect.length >= continentPool.length) setTimeout(() => setPhase("complete"), 1000);
+    if (newCorrect.length >= continentPool.length) 
+
+      posthog.capture("game_end", { mode: "continent-study", continent: selectedContinent, countries_studied: newCorrect.length });
+      
+      setTimeout(() => setPhase("complete"), 1000);
   }, [selectedCountryName, selectedContinent, continentPool, correctCountries, currentStreak, soundEnabled]);
 
   if (loading) {

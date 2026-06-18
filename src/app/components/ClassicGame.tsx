@@ -19,6 +19,7 @@ import { getRandomHint, getRemainingHintCount } from "@/app/utils/getRandomHint"
 import { soundEffects } from "@/app/utils/soundEffects";
 import { addXP, calculateXPReward } from "@/app/utils/xpSystem";
 import { getStoredUser } from "@/api/client";
+import posthog from "posthog-js";
 
 interface ClassicGameProps {
   onBackToMenu: () => void;
@@ -45,7 +46,11 @@ export default function ClassicGame({ onBackToMenu }: ClassicGameProps) {
   const { state, setState, addHint, removeHint, clearHints, setSelectedCountry: saveSelectedCountry, resetState } = useGameState("classic");
   const { correctCountries, wrongCountries, score, hints, selectedCountry } = state;
   const [localSelectedCountry, setLocalSelectedCountry] = useState<string | null>(selectedCountry || null);
-
+  
+    useEffect(() => {
+    posthog.capture("game_start", { mode: "classic" });
+  }, []);
+  
   useEffect(() => { if (selectedCountry) setLocalSelectedCountry(selectedCountry); }, [selectedCountry]);
 
   const allCountryNames = useMemo(() => countries.map(c => c.properties.name), [countries]);
