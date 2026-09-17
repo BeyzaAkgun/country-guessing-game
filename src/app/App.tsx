@@ -14,6 +14,7 @@ import { AuthScreen } from "@/app/components/AuthScreen";
 import { MultiplayerGame } from "@/app/components/MultiplayerGame";
 import ClassicGame from "@/app/components/ClassicGame";
 import { useAuth } from "@/app/hooks/useAuth";
+import { auth } from "@/api/client";
 import posthog from "posthog-js";
 
 type GameMode =
@@ -51,13 +52,30 @@ function GameTransition({ children, id }: { children: React.ReactNode; id: strin
 }
 
 export default function App() {
-  const { user, state: authState, error, loading, login, register, logout } = useAuth();
+  const { user, profile, state: authState, error, loading, login, register, logout } = useAuth();
   const [viewMode, setViewMode] = useState<ViewMode>("globe");
   const [gameMode, setGameMode] = useState<GameMode>(null);
+  const [debugData, setDebugData] = useState<any>(null);
+  const [debugError, setDebugError] = useState<string | null>(null);
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
     return () => { document.body.style.overflow = ""; };
+  }, []);
+
+  useEffect(() => {
+    const fetchProfileDebug = async () => {
+      try {
+        const data = await auth.me();
+        setDebugData(data);
+        setDebugError(null);
+      } catch (error: any) {
+        setDebugError(error?.message ?? "Fetch error");
+        setDebugData(null);
+      }
+    };
+
+    fetchProfileDebug();
   }, []);
 
   useEffect(() => {
@@ -223,12 +241,31 @@ export default function App() {
         user={user}
         onShowAuth={() => setViewMode("auth")}
       /> */}
-<GameFAB
-    onLogout={logout}
-    user={user}
-    onShowAuth={() => setViewMode("auth")}
-    inGame={viewMode === "game"}
-  />
+      <GameFAB
+        onLogout={logout}
+        user={user}
+        profile={profile}
+        onShowAuth={() => setViewMode("auth")}
+        inGame={viewMode === "game"}
+      />
+
+      <div style={{
+        position: "fixed",
+        bottom: 0,
+        left: 0,
+        right: 0,
+        background: "rgba(0, 0, 0, 0.75)",
+        color: "white",
+        padding: "8px 10px",
+        zIndex: 9999,
+        fontSize: "12px",
+        wordBreak: "break-all",
+        maxHeight: "160px",
+        overflowY: "auto",
+      }}>
+        {debugData ? JSON.stringify(debugData) : "Loading /users/me..."}
+        {debugError && ` Error: ${debugError}`}
+      </div>
     </div>
   );
 }

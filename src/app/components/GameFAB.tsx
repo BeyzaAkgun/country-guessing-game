@@ -305,17 +305,18 @@ import { GlobalStatsScreen } from "@/app/components/GlobalStatsScreen";
 import { getXPState, getLevelTitle, loadTotalXP } from "@/app/utils/xpSystem";
 import { soundEffects } from "@/app/utils/soundEffects";
 import { useDisplayMode } from "@/app/hooks/useDisplayMode";
-import type { StoredUser } from "@/api/client";
+import type { StoredUser, UserProfile } from "@/api/client";
 
 interface GameFABProps {
   onTVModeChange?: (isTV: boolean) => void;
   onLogout?: () => void;
   onShowAuth?: () => void;
   user?: StoredUser | null;
+  profile?: UserProfile | null;
   inGame?: boolean;
 }
 
-export function GameFAB({ onTVModeChange, onLogout, onShowAuth, user, inGame = false }: GameFABProps) {
+export function GameFAB({ onTVModeChange, onLogout, onShowAuth, user, profile, inGame = false }: GameFABProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [showGlobalStats, setShowGlobalStats] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(() => {
@@ -330,9 +331,10 @@ export function GameFAB({ onTVModeChange, onLogout, onShowAuth, user, inGame = f
     return () => window.removeEventListener("xp-updated", handler);
   }, []);
 
-  // Guests never see XP/level data — use a zero state so nothing leaks through
+  // Guests never see XP/level data — use server profile XP when available.
   const isGuest = !user;
-  const xpState = isGuest ? getXPState(0) : getXPState(loadTotalXP(user?.id));
+  const xpSource = profile?.xp ?? (isGuest ? 0 : loadTotalXP(user?.id));
+  const xpState = isGuest ? getXPState(0) : getXPState(xpSource);
   const levelPct = isGuest
     ? 0
     : xpState.xpForNextLevel > 0
@@ -555,7 +557,11 @@ export function GameFAB({ onTVModeChange, onLogout, onShowAuth, user, inGame = f
         )}
       </motion.button>
 
-      <GlobalStatsScreen isOpen={showGlobalStats} onClose={() => setShowGlobalStats(false)} />
+      <GlobalStatsScreen
+        isOpen={showGlobalStats}
+        onClose={() => setShowGlobalStats(false)}
+        profile={profile}
+      />
     </>
   );
 }

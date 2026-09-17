@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback } from "react";
 import {
   auth,
+  users,
   setToken,
   clearToken,
   getToken,
@@ -9,12 +10,14 @@ import {
   setStoredUser,
   clearStoredUser,
   type StoredUser,
+  type UserProfile,
 } from "@/api/client";
 
 export type AuthState = "loading" | "authenticated" | "unauthenticated";
 
 export interface UseAuthReturn {
   user: StoredUser | null;
+  profile: UserProfile | null;
   state: AuthState;
   error: string | null;
   loading: boolean;
@@ -25,6 +28,7 @@ export interface UseAuthReturn {
 
 export function useAuth(): UseAuthReturn {
   const [user, setUser]       = useState<StoredUser | null>(getStoredUser);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [state, setState]     = useState<AuthState>(
     getToken() ? "loading" : "unauthenticated"
   );
@@ -37,18 +41,35 @@ export function useAuth(): UseAuthReturn {
       setState("unauthenticated");
       return;
     }
-    auth.me()
-      .then(me => {
+
+    let cancelled = false;
+
+    const restoreAuth = async () => {
+      try {
+        const me = await auth.me();
         const stored: StoredUser = { id: me.id, username: me.username, email: me.email };
+        if (cancelled) return;
         setUser(stored);
         setStoredUser(stored);
-        setState("authenticated");
-      })
-      .catch(() => {
+
+        try {
+          const profileData = await users.getProfile();
+          if (!cancelled) setProfile(profileData);
+        } catch {
+          if (!cancelled) setProfile(null);
+        }
+
+        if (!cancelled) setState("authenticated");
+      } catch {
         clearToken();
         clearStoredUser();
-        setState("unauthenticated");
-      });
+        setProfile(null);
+        if (!cancelled) setState("unauthenticated");
+      }
+    };
+
+    restoreAuth();
+    return () => { cancelled = true; };
   }, []);
 
   const login = useCallback(async (email: string, password: string) => {
@@ -61,6 +82,12 @@ export function useAuth(): UseAuthReturn {
       const stored: StoredUser = { id: me.id, username: me.username, email: me.email };
       setUser(stored);
       setStoredUser(stored);
+      try {
+        const profileData = await users.getProfile();
+        setProfile(profileData);
+      } catch {
+        setProfile(null);
+      }
       setState("authenticated");
     } catch (e: any) {
       setError(e.message ?? "Login failed");
@@ -83,6 +110,12 @@ export function useAuth(): UseAuthReturn {
       const stored: StoredUser = { id: me.id, username: me.username, email: me.email };
       setUser(stored);
       setStoredUser(stored);
+      try {
+        const profileData = await users.getProfile();
+        setProfile(profileData);
+      } catch {
+        setProfile(null);
+      }
       setState("authenticated");
     } catch (e: any) {
       setError(e.message ?? "Registration failed");
@@ -95,8 +128,9 @@ export function useAuth(): UseAuthReturn {
     clearToken();
     clearStoredUser();
     setUser(null);
+    setProfile(null);
     setState("unauthenticated");
   }, []);
 
-  return { user, state, error, loading, login, register, logout };
+  return { user, profile, state, error, loading, login, register, logout };
 }

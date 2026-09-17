@@ -268,7 +268,7 @@ import {
   Clock, Loader2, ChevronDown, ChevronUp,
 } from "lucide-react";
 import { getXPState, getLevelTitle, loadTotalXP } from "@/app/utils/xpSystem";
-import { daily, getStoredUser, type DailyLeaderboardEntry } from "@/api/client";
+import { daily, getStoredUser, type DailyLeaderboardEntry, type UserProfile } from "@/api/client";
 
 // ── localStorage helpers (same as DailyChallenge) ────────────────────────────
 function loadSpeedBest(duration: number): number {
@@ -514,11 +514,13 @@ function DailyLeaderboardSection({ username }: { username: string | null }) {
 interface GlobalStatsScreenProps {
   isOpen: boolean;
   onClose: () => void;
+  profile?: UserProfile | null;
 }
 
-export function GlobalStatsScreen({ isOpen, onClose }: GlobalStatsScreenProps) {
+export function GlobalStatsScreen({ isOpen, onClose, profile }: GlobalStatsScreenProps) {
   const storedUser = useMemo(() => getStoredUser(), [isOpen]);
-  const xpState = useMemo(() => getXPState(loadTotalXP(storedUser?.id)), [isOpen, storedUser?.id]);
+  const xpSource = profile?.xp ?? loadTotalXP(storedUser?.id);
+  const xpState = useMemo(() => getXPState(xpSource), [isOpen, profile?.xp, storedUser?.id]);
   const daily_result = useMemo(() => loadDailyResult(), [isOpen]);
   const continentProgress = useMemo(() => loadContinentProgress(), [isOpen]);
   const classicStats = useMemo(() => loadClassicStats(), [isOpen]);
